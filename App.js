@@ -12,7 +12,7 @@ import DetailHomestay from './components/DetailHomestayScreen';
 import colors from './assets/consts/colors';
 import sizes from './assets/consts/sizes';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import NotificationSetting from'./AccountScreenComponent/NotificationSetting';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -141,6 +141,11 @@ const App = () => {
         <Stack.Screen
           name="Login"
           component={Login}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="NotificationSetting"
+          component={NotificationSetting}
           options={{headerShown: false}}
         />
         <Stack.Screen

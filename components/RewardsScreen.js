@@ -1,5 +1,6 @@
 import React from 'react';
-import { Text, View, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import colors from '../assets/consts/colors';
 import vouchers from '../assets/data/vouchers';
 

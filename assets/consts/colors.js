@@ -13,6 +13,7 @@ const colors = {
   lightgray: '#D9D9D9',
   yellow: '#FCB446',
   red: '#C44444',
+  transparent: 'rgba(0,0,0,0)',
 };
 
 export default colors;

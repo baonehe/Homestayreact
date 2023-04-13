@@ -20,6 +20,7 @@ import {SliderBox} from 'react-native-image-slider-box';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
+import Notification from './NotiScreen';
 
 const Home = ({navigation}) => {
   const [selectedLocation, setSelectedLocation] = useState([]);
@@ -46,18 +47,24 @@ const Home = ({navigation}) => {
       <View style={styles.categoryContainer}>
         <View style={styles.categoryRow}>
           {categoriesTime.map((icon, index) => (
-            <View key={index} style={styles.iconContainer}>
+            <TouchableOpacity
+              key={index}
+              style={styles.iconContainer}
+              onPress={() => navigation.navigate('SearchHomestay')}>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
         <View style={styles.categoryRow}>
           {categoriesType.map((icon, index) => (
-            <View key={index} style={styles.iconContainer}>
+            <TouchableOpacity
+              key={index}
+              style={styles.iconContainer}
+              onPress={() => navigation.navigate('SearchHomestay')}>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </View>
@@ -101,7 +108,11 @@ const Home = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <StatusBar translucent={false} backgroundColor={colors.secondary} />
+      <StatusBar
+        barStyle="dark-content"
+        translucent
+        backgroundColor={colors.transparent}
+      />
       <View style={styles.menuWrapper}>
         <Image source={images.logo} style={styles.logoImage} />
         <Ionicons
@@ -109,6 +120,7 @@ const Home = ({navigation}) => {
           size={sizes.iconMedium}
           color={colors.primary}
           style={styles.menuIcon}
+          onPress={() => navigation.navigate(Notification)}
         />
       </View>
 
@@ -203,6 +215,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: colors.white,
+    marginBottom: 10,
   },
   logoImage: {
     width: sizes.widthLogo,
@@ -219,7 +232,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderColor: colors.dark,
     borderWidth: 1,
-    marginTop: 30,
+    marginTop: 20,
     backgroundColor: colors.white,
     height: 50,
     marginHorizontal: 15,
@@ -294,7 +307,7 @@ const styles = StyleSheet.create({
   },
   boxImageSlider: {
     borderRadius: 15,
-    width: 350,
+    width: '88%',
   },
   dotSlider: {
     width: 14,
@@ -317,7 +330,7 @@ const styles = StyleSheet.create({
   },
   flatList: {
     marginTop: 8,
-    paddingLeft: 20,
+    paddingLeft: 15,
     paddingBottom: 30,
   },
   salesOffCard: {
@@ -359,8 +372,9 @@ const styles = StyleSheet.create({
   itemInfor: {
     paddingVertical: 5,
     paddingHorizontal: 10,
+    flex: 1,
     flexDirection: 'column',
-    // justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
   itemInforName: {
     fontSize: sizes.fontLarge,
@@ -368,7 +382,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   itemInforPrice: {
-    fontSize: sizes.fontMedium,
+    fontSize: sizes.fontExtraLarge,
     fontWeight: 'bold',
     color: colors.dark,
   },

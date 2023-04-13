@@ -5,15 +5,8 @@ import colors from '../assets/consts/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIoni from 'react-native-vector-icons/Ionicons';
 
-function SignUp({navigation}) {
+function SignUp() {
   const [email, setEmail] = useState('');
-  const [fullname, setFullname] = useState('');
-  const [phonenumber, setphonenumber] = useState('');
-  const [password, setpassword] = useState('');
-  const [checkpassword, setcheckpassword] = useState('');
-  const backloginscreen = async () => {
-    navigation.navigate('Login');
-  };
   return (
     <View style={{flex: 1, alignItems: 'center'}}>
       <Text style={styles.title}>Sign up</Text>
@@ -32,9 +25,9 @@ function SignUp({navigation}) {
         <TextInput
           style={styles.input}
           placeholder="Full name"
-          value={fullname}
+          value={email}
           keyboardType="default"
-          onChangeText={text => setFullname(text)}
+          onChangeText={text => setEmail(text)}
         />
       </View>
       <View style={styles.samerow}>
@@ -42,9 +35,9 @@ function SignUp({navigation}) {
         <TextInput
           style={styles.input}
           placeholder="Your mobile phone"
-          value={phonenumber}
+          value={email}
           keyboardType="number-pad"
-          onChangeText={text => setphonenumber(text)}
+          onChangeText={text => setEmail(text)}
         />
       </View>
 
@@ -53,9 +46,9 @@ function SignUp({navigation}) {
         <TextInput
           style={styles.input}
           placeholder="New password"
-          value={password}
+          value={email}
           secureTextEntry
-          onChangeText={text => setpassword(text)}
+          onChangeText={text => setEmail(text)}
         />
       </View>
 
@@ -64,9 +57,9 @@ function SignUp({navigation}) {
         <TextInput
           style={styles.input}
           placeholder="Confirm your new password"
-          value={checkpassword}
+          value={email}
           secureTextEntry
-          onChangeText={text => setcheckpassword(text)}
+          onChangeText={text => setEmail(text)}
         />
       </View>
 
@@ -95,12 +88,10 @@ function SignUp({navigation}) {
         }}>
         Sign up
       </Button>
+
       <View style={styles.samerow}>
         <Text style={{marginStart: 12, marginTop: 5}}> Joined us before? </Text>
-        <Text style={{color: '#00008B'}} onPress={() => backloginscreen()}>
-          {' '}
-          Login{' '}
-        </Text>
+        <Text style={colors.primary}> Login </Text>
       </View>
     </View>
   );

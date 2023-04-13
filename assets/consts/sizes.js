@@ -8,6 +8,7 @@ const sizes = {
 
   // icon sizes
   iconTiny: 16,
+  iconExtraSmall: 24,
   iconSmall: 28,
   iconMedium: 32,
   iconLarge: 36,

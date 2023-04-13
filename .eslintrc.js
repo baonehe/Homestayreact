@@ -11,5 +11,6 @@ module.exports = {
           [] /* optional array of validators used for propTypes validation */,
       },
     ],
+    'react-native/no-inline-styles': 0,
   },
 };

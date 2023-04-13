@@ -15,6 +15,9 @@ const images = {
   image2: require('./img2.jpg'),
   image3: require('./img3.jpg'),
   image4: require('./img4.jpg'),
+
+  // Map
+  map: require('./Map.png'),
 };
 
 module.exports = images;

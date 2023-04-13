@@ -30,11 +30,8 @@ export default function Login({navigation}) {
     if (isLoggedIn === 'true') {
     }
   };
-  const SignUp = async () => {
-    navigation.navigate('SignUp');
-  };
   const LoginIn = async () => {
-    navigation.navigate('TabNavigator');
+    navigation.navigate('BottomTabsNavigator');
   };
   const handleLogin = async () => {
     setIsLoading(true);
@@ -197,7 +194,9 @@ export default function Login({navigation}) {
           <Text style={{color: '#9a9a9a', fontSize: 13, marginRight: 5}}>
             Not a remember?
           </Text>
-          <Text style={{color: colors.primary, fontSize: 13}} onPress={SignUp}>
+          <Text
+            style={{color: colors.primary, fontSize: 13}}
+            onPress={() => navigation.navigate('SignUp')}>
             Register Now
           </Text>
         </View>

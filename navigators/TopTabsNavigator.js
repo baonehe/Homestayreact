@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
 
   flatList: {
     marginTop: 15,
-    paddingBottom: 30,
+    paddingBottom: 40,
   },
   itemCard: {
     height: 120,

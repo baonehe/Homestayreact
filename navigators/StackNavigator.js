@@ -6,6 +6,7 @@ import Login from '../components/SignInScreen';
 import SignUp from '../components/SignUpScreen';
 import DetailHomestay from '../components/DetailHomestayScreen';
 import SearchHomestay from '../components/SearchHomestayScreen';
+import NotificationSetting from '../AccountScreenComponent/NotificationSetting';
 import BottomTabsNavigator from './BottomTabsNavigator';
 import TopTabsNavigator from './TopTabsNavigator';
 import colors from '../assets/consts/colors';
@@ -52,6 +53,11 @@ function StackTabs() {
       <Stack.Screen
         name="SearchHomestay"
         component={SearchHomestay}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="NotificationSetting"
+        component={NotificationSetting}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

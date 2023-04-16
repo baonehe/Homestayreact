@@ -12,7 +12,10 @@ import FastImage from 'react-native-fast-image';
 import {SliderBox} from 'react-native-image-slider-box';
 import {ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import colors from '../assets/consts/colors';
@@ -42,7 +45,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
           ImageComponent={FastImage}
           images={listImages}
           circleLoop={true}
-          parentWidth={300}
+          parentWidth={350}
           sliderBoxHeight={175}
           activeOpacity={1}
           dotStyle={styles.dotSlider}
@@ -51,18 +54,67 @@ const DetailHomestayScreen = ({navigation, route}) => {
           imageLoadingColor={colors.primary}
           ImageComponentStyle={styles.boxImageSlider}
         />
-
-        <Text style={styles.roomTypeText}>{item.roomtype}</Text>
-        <Text style={styles.timeTypeText}>{item.timetype}</Text>
-        <Text style={styles.priceText}>{item.price}</Text>
-        <Text style={styles.conditionText}>{item.condition}</Text>
+        <View style={styles.inforRoom}>
+          <Text style={styles.roomTypeText}>{item.roomtype}</Text>
+          <View style={styles.detailRoom}>
+            <View style={styles.priceContainer}>
+              <Text style={styles.timeTypeText}>{item.timetype}</Text>
+              <Text style={styles.priceText}>{item.price}$</Text>
+            </View>
+            <View style={styles.conditionContainer}>
+              <View style={styles.conditionItem}>
+                <Ionicons name="bed" size={20} color={colors.primary} />
+                <Text style={styles.conditionText}>{item.condition[0]}</Text>
+              </View>
+              <View style={styles.conditionItem}>
+                <MaterialCommunityIcons
+                  name="floor-plan"
+                  size={20}
+                  color={colors.primary}
+                />
+                <Text style={styles.conditionText}>{item.condition[1]}</Text>
+              </View>
+              <View style={styles.conditionItem}>
+                <MaterialCommunityIcons
+                  name="window-open-variant"
+                  size={20}
+                  color={colors.primary}
+                />
+                <Text style={styles.conditionText}>{item.condition[2]}</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.provisionRoom}>
+            <View style={styles.provisionItem}>
+              <AntDesign name="creditcard" size={16} color={colors.black} />
+              <Text style={styles.provisionText}>{item.provision[0]}</Text>
+            </View>
+            <View style={styles.provisionItem}>
+              <FontAwesome5 name="coins" size={16} color={colors.black} />
+              <Text style={styles.provisionText}>{item.provision[1]}</Text>
+            </View>
+          </View>
+          <View style={styles.policyRoom}>
+            <View style={styles.policyItem}>
+              <Ionicons
+                name="md-information-circle-outline"
+                size={27}
+                color={colors.secondary}
+              />
+              <Text style={styles.policyText}>Chính sách hoàn trả</Text>
+            </View>
+            <TouchableOpacity style={styles.btnBook}>
+              <Text style={styles.textBtn}>BOOK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </TouchableOpacity>
     );
   };
 
   return (
     <ScrollView
-      showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={true}
       contentContainerStyle={styles.container}>
       <ImageBackground source={homestay.image} style={styles.headerImage}>
         <View style={styles.header}>
@@ -154,18 +206,6 @@ const DetailHomestayScreen = ({navigation, route}) => {
           contentContainerStyle={styles.flatList}
           renderItem={({item}) => <RoomItem item={item} />}
         />
-        <BottomSheet
-          ref={sheetRef}
-          detached={true}
-          enableContentPanningGesture={false}
-          enableHandlePanningGesture={false}
-          enableOverDrag={false}
-          enablePanDownToClose={true}
-          snapPoints={snapPoints}>
-          <TouchableOpacity style={styles.btnBook}>
-            <Text style={styles.textBtn}>SELECT</Text>
-          </TouchableOpacity>
-        </BottomSheet>
       </View>
     </ScrollView>
   );
@@ -231,38 +271,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 
-  btnBook: {
-    height: 42,
-    width: '60%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-    flex: 1,
-    backgroundColor: colors.dark,
-    marginHorizontal: 20,
-    borderRadius: 20,
-  },
-  textBtn: {
-    color: colors.white,
-    fontSize: 14,
-    fontFamily: 'Merriweather-Bold',
-  },
-
   flatList: {
     marginTop: 15,
-    paddingBottom: 30,
     alignItems: 'center',
   },
   roomCard: {
-    height: 300,
-    width: 300,
+    height: 'auto',
+    width: 350,
     alignSelf: 'center',
     alignContent: 'center',
     alignItems: 'stretch',
-    borderWidth: 1,
+    borderWidth: 0.7,
     borderRadius: 15,
-    marginBottom: 30,
-    marginVertical: 20,
+    borderColor: colors.darkgray,
+    marginVertical: 15,
+    elevation: 12,
+    backgroundColor: colors.white,
   },
   boxImageSlider: {
     borderTopLeftRadius: 15,
@@ -276,29 +300,122 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
+  inforRoom: {
+    flexDirection: 'column',
+    height: 'auto',
+    alignItems: 'flex-start',
+  },
   roomTypeText: {
     fontFamily: 'Merriweather-Bold',
     fontSize: 20,
     color: colors.dark,
     margin: 10,
-    marginLeft: 20,
+    alignSelf: 'center',
+  },
+
+  detailRoom: {
+    flexDirection: 'row',
+    height: 'auto',
+    alignItems: 'flex-start',
+  },
+  conditionContainer: {
+    width: '50%',
+    height: 'auto',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    paddingLeft: 20,
+    borderLeftWidth: 0.7,
+    borderColor: colors.dark,
+    verticalAlign: 'top',
+  },
+  conditionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 3,
+  },
+  conditionText: {
+    fontFamily: 'Lato-Regular',
+    fontSize: 15,
+    color: colors.black,
+    marginHorizontal: 10,
+  },
+
+  priceContainer: {
+    width: '50%',
+    height: 'auto',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    paddingLeft: 20,
+    paddingBottom: 8,
   },
   timeTypeText: {
     fontFamily: 'Merriweather-Regular',
-    fontSize: 16,
+    fontSize: 15,
     color: colors.black,
     marginLeft: 20,
+    marginBottom: 5,
   },
   priceText: {
-    fontFamily: 'Merriweather-Regular',
-    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 24,
     color: colors.red,
     marginLeft: 20,
+    marginBottom: 5,
   },
-  conditionText: {
-    fontFamily: 'Merriweather-Regular',
-    fontSize: 16,
+
+  provisionRoom: {
+    height: 'auto',
+    width: 310,
+    flexDirection: 'column',
+    backgroundColor: colors.light,
+    marginHorizontal: 20,
+    marginVertical: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  provisionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 15,
+  },
+  provisionText: {
+    fontFamily: 'Lato-Regular',
+    fontSize: 14,
+    marginHorizontal: 10,
+    marginVertical: 5,
     color: colors.black,
-    marginLeft: 20,
+  },
+
+  policyRoom: {
+    width: '100%',
+    // backgroundColor: colors.black,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 8,
+  },
+  policyItem: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  policyText: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    marginLeft: 5,
+    color: colors.darkgray,
+  },
+  btnBook: {
+    height: 40,
+    width: 65,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.dark,
+    borderRadius: 20,
+  },
+  textBtn: {
+    color: colors.white,
+    fontSize: 13,
+    fontFamily: 'Merriweather-Bold',
   },
 });

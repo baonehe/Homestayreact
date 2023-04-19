@@ -18,6 +18,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {BottomFabBar} from 'rn-wave-bottom-bar';
+import FastBookingDetailHotel from './components/FastBookingDetailHotelScreen';
 
 // import {
 //   AnimatedTabBarNavigator,
@@ -161,6 +162,11 @@ const App = () => {
         <Stack.Screen
           name="DetailHomestay"
           component={DetailHomestay}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="FastBookingDetailHotel"
+          component={FastBookingDetailHotel}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

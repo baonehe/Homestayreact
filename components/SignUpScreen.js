@@ -4,28 +4,42 @@ import {Button} from 'react-native-paper';
 import colors from '../assets/consts/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIoni from 'react-native-vector-icons/Ionicons';
+import firestore from '@react-native-firebase/firestore';
 
-function SignUp({navigation}) {
-  const [email, setEmail] = useState('');
+function SignUp({navigation,route}) {
 
+  const [regemail, setEmail] = useState('');
   const [fullname, setFullname] = useState('');
   const [phonenumber, setphonenumber] = useState('');
   const [password, setpassword] = useState('');
   const [checkpassword, setcheckpassword] = useState('');
-
+  const Regist = async () => {
+    firestore()
+      .collection('Users')
+      .add({
+        name: fullname,
+        email: regemail,
+        phone:phonenumber,
+        password:checkpassword,
+      })
+      .then(() => {
+        console.log('User added!');
+        backloginscreen();
+      });
+  };
   const backloginscreen = async () => {
     navigation.navigate('Login');
   };
 
   return (
     <View style={{flex: 1, alignItems: 'center'}}>
-      <Text style={styles.title}>Sign up</Text>
+      <Text style={styles.title}>Sign Up</Text>
       <View style={styles.samerow}>
         <Icon name="envelope" size={20} marginRight={10} />
         <TextInput
           style={styles.input}
           placeholder="Email"
-          value={email}
+          value={regemail}
           keyboardType="email-address"
           onChangeText={text => setEmail(text)}
         />
@@ -95,7 +109,8 @@ function SignUp({navigation}) {
           justifyContent: 'center',
           backgroundColor: colors.dark,
           marginTop: 20,
-        }}>
+        }}
+        onPress={() => Regist()}>
         Sign up
       </Button>
       <View style={styles.samerow}>

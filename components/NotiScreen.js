@@ -7,7 +7,7 @@ import colors from '../assets/consts/colors';
 import sizes from '../assets/consts/sizes';
 import TopTabsNavigator2 from '../navigators/TopTabsNavigator2';
 
-const Notification = ({navigation}) => {
+const Notification = ({navigation,route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>

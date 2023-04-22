@@ -11,6 +11,7 @@ import BottomTabsNavigator from './BottomTabsNavigator';
 import TopTabsNavigator from './TopTabsNavigator';
 import colors from '../assets/consts/colors';
 import Information from '../AccountScreenComponent/Information';
+import FastBookingDetailHotel from '../components/FastBookingDetailHotelScreen';
 
 const Stack = createNativeStackNavigator();
 const myTheme = {
@@ -65,6 +66,11 @@ function StackTabs() {
         name="NotificationSetting"
         component={NotificationSetting}
         options={{headerShown: true}}
+      />
+      <Stack.Screen
+        name="FastBookingDetailHotel"
+        component={FastBookingDetailHotel}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

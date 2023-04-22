@@ -7,6 +7,7 @@ import {
   View,
   SafeAreaView,
   Image,
+  Input,
   Alert,
 } from 'react-native';
 import images from '../assets/images';
@@ -15,26 +16,43 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
+import firestore from '@react-native-firebase/firestore';
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    checkLoginStatus();
-  }, []);
-
-  const checkLoginStatus = async () => {
-    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-    if (isLoggedIn === 'true') {
-    }
+  const [isSecure, setisSecure] = useState(true);
+  const checkloggin = async () => {
+    firestore()
+      .collection('Users')
+      .where('email', '==', email)
+      .get()
+      .then(querySnapshot => {
+        if (querySnapshot.docs.length > 0) {
+          if (
+            querySnapshot.docs[0]._data.email === email &&
+            querySnapshot.docs[0]._data.password === password
+          ) {
+            LoginIn();
+          } else {
+            alert('Wrong password');
+          }
+        } else {
+          alert('Account not found');
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
   };
   const SignUp = async () => {
     navigation.navigate('SignUp');
   };
+
   const LoginIn = async () => {
-    navigation.navigate('BottomTabsNavigator');
+    navigation.navigate('BottomTabsNavigator',{email});
+
   };
   const handleLogin = async () => {
     setIsLoading(true);
@@ -104,9 +122,15 @@ export default function Login({navigation}) {
           <TextInput
             style={styles.input}
             placeholder="Password"
-            secureTextEntry
+            secureTextEntry={isSecure}
             value={password}
-            onChangeText={text => setPassword(text)}
+            onChangeText={text => setPassword(text)} />
+          <Icon
+            onPress={() => {
+              setisSecure(prev => !prev);
+            }}
+            size={20}
+            name={isSecure ? 'eye-slash' : 'eye'}
           />
         </View>
         <Text
@@ -128,7 +152,7 @@ export default function Login({navigation}) {
             justifyContent: 'center',
             backgroundColor: colors.dark,
           }}
-          onPress={LoginIn}
+          onPress={checkloggin}
           disabled={isLoading}>
           {isLoading ? (
             <Text style={styles.buttonText}>Loading...</Text>

@@ -3,20 +3,36 @@ import { Text, View, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import colors from '../assets/consts/colors';
 import vouchers from '../assets/data/vouchers';
+import hotels from '../assets/data/hotels';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
+const Rewards = ({ navigation }) => {
 
-const Rewards = () => {
-
+    const findDataById = async (id) => {
+        for (let i = 0; i < hotels.length; i++) {
+          if (hotels[i].id === id.toString()) {
+            return hotels[i];
+          }
+        }
+      };
     const VoucherCard = ({ voucher }) => {
+        const handlePress = async () => {
+            if (voucher.hasOwnProperty('id_hotel')) {
+              const homestay = await findDataById(voucher.id_hotel);
+              navigation.navigate('DetailHomestay', homestay);
+            } else {
+              navigation.navigate('DetailsReward', voucher);
+            }
+          };
         return (
-            <TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => navigation.navigate('DetailsReward', voucher)}>
                 <View style={styles.voucherCard}>
                     <View style={styles.voucher_title}>
                         <View style={styles.voucher_name}>
-                        <Text style={styles.txt_name}
-                        >{voucher.title}</Text>
+                            <Text style={styles.txt_name}
+                            >{voucher.name}</Text>
                         </View>
                         <Text style={styles.voucher_quantity}>{voucher.quantity}x</Text>
                     </View>
@@ -25,7 +41,8 @@ const Rewards = () => {
                             <Text style={styles.txt_saleoff}>{voucher.sale_off}</Text>
                             <Text style={styles.txt_date}>{voucher.date_start} ~ {voucher.date_end}</Text>
                         </View>
-                        <TouchableOpacity style={styles.useTouch}>
+                        <TouchableOpacity style={styles.useTouch}
+                            onPress={() => handlePress()}>
                             <Text style={styles.txt_use}>DÙNG</Text>
                         </TouchableOpacity>
                     </View>
@@ -76,7 +93,7 @@ const styles = StyleSheet.create({
     },
     voucherCard: {
         height: 200,
-        width: '88%',
+        width: '90%',
         backgroundColor: colors.white,
         elevation: 15,
         marginHorizontal: 10,
@@ -91,7 +108,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     voucher_name: {
-        width: '85%',
+        width: '83%',
         borderTopLeftRadius: 8,
         backgroundColor: colors.dark,
         justifyContent: 'center',
@@ -104,7 +121,7 @@ const styles = StyleSheet.create({
         color: colors.lightwhite,
     },
     voucher_quantity: {
-        width: '15%',
+        width: '17%',
         borderTopRightRadius: 8,
         fontSize: 18,
         fontFamily: 'Inter-Medium',
@@ -119,7 +136,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     voucher_saleoff: {
-        width: '85%',
+        width: '83%',
         borderRightWidth: 2,
         borderStyle: 'dashed',
         borderColor: colors.gray,
@@ -139,12 +156,12 @@ const styles = StyleSheet.create({
         marginLeft: 20,
     },
     useTouch: {
-        width: '15%',
+        width: '17%',
         fontSize: 20,
         fontFamily: 'Inter-Regular',
         justifyContent: 'center',
     },
-    txt_use:{
+    txt_use: {
         color: colors.primary,
         fontSize: 14,
         fontFamily: 'Inter-ExtraBold',

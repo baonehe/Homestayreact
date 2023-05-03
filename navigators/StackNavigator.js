@@ -10,6 +10,7 @@ import NotificationSetting from '../AccountScreenComponent/NotificationSetting';
 import BottomTabsNavigator from './BottomTabsNavigator';
 import TopTabsNavigator from './TopTabsNavigator';
 import colors from '../assets/consts/colors';
+import DetailsReward from '../components/DetailReward';
 import Information from '../AccountScreenComponent/Information';
 import FastBookingDetailHotel from '../components/FastBookingDetailHotelScreen';
 
@@ -70,6 +71,11 @@ function StackTabs() {
       <Stack.Screen
         name="FastBookingDetailHotel"
         component={FastBookingDetailHotel}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="DetailsReward"
+        component={DetailsReward}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

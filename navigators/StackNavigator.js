@@ -10,6 +10,7 @@ import NotificationSetting from '../AccountScreenComponent/NotificationSetting';
 import BottomTabsNavigator from './BottomTabsNavigator';
 import TopTabsNavigator from './TopTabsNavigator';
 import colors from '../assets/consts/colors';
+import DetailsReward from '../components/DetailReward';
 
 const Stack = createNativeStackNavigator();
 const myTheme = {
@@ -58,6 +59,11 @@ function StackTabs() {
       <Stack.Screen
         name="NotificationSetting"
         component={NotificationSetting}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="DetailsReward"
+        component={DetailsReward}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

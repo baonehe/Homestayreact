@@ -21,7 +21,7 @@ import images from '../assets/images';
 
 const DetailHomestayScreen = ({navigation, route}) => {
   const homestay = route.params;
-  console.log(homestay);
+  // console.log(homestay);
   const listImages = [
     images.image1,
     images.image2,

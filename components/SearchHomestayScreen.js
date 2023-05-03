@@ -13,7 +13,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-// import BottomSheet from 'react-native-gesture-bottom-sheet';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 import Mapbox from '@rnmapbox/maps';
 import colors from '../assets/consts/colors';
@@ -44,6 +43,7 @@ const SearchHomestay = ({navigation}) => {
       setSheetOpen(true);
     }
   }, []);
+
   const handleSnapPress = useCallback(index => {
     sheetRef.current?.snapToIndex(index);
   }, []);
@@ -299,4 +299,17 @@ const styles = StyleSheet.create({
     width: 32,
     alignSelf: 'center',
   },
+
+  // page: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
+  // container: {
+  //   height: 300,
+  //   width: 300,
+  // },
+  // map: {
+  //   flex: 1,
+  // },
 });

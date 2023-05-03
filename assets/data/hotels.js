@@ -17,6 +17,10 @@ const hotels = [
         timetype: 'Hourly',
         price: 120,
         condition: ['Double Bed', '18m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
       {
         id: '2',
@@ -24,8 +28,13 @@ const hotels = [
         timetype: 'Hourly',
         price: 200,
         condition: ['Double Bed', '25m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
     ],
+    policy: 'Hủy miễn phí trước giờ nhận phòng 1 tiếng.',
   },
   {
     id: '2',
@@ -45,6 +54,10 @@ const hotels = [
         timetype: 'Hourly',
         price: 120,
         condition: ['Double Bed', '18m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
       {
         id: '2',
@@ -52,8 +65,13 @@ const hotels = [
         timetype: 'Hourly',
         price: 200,
         condition: ['Double Bed', '25m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
     ],
+    policy: 'Hủy miễn phí trước giờ nhận phòng 1 tiếng.',
   },
   {
     id: '3',
@@ -73,6 +91,10 @@ const hotels = [
         timetype: 'Hourly',
         price: 120,
         condition: ['Double Bed', '18m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
       {
         id: '2',
@@ -80,8 +102,13 @@ const hotels = [
         timetype: 'Hourly',
         price: 200,
         condition: ['Double Bed', '25m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
     ],
+    policy: 'Hủy miễn phí trước giờ nhận phòng 1 tiếng.',
   },
   {
     id: '4',
@@ -101,6 +128,10 @@ const hotels = [
         timetype: 'Hourly',
         price: 120,
         condition: ['Double Bed', '18m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
       {
         id: '2',
@@ -108,8 +139,13 @@ const hotels = [
         timetype: 'Hourly',
         price: 200,
         condition: ['Double Bed', '25m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
     ],
+    policy: 'Hủy miễn phí trước giờ nhận phòng 1 tiếng.',
   },
   {
     id: '5',
@@ -129,6 +165,10 @@ const hotels = [
         timetype: 'Hourly',
         price: 120,
         condition: ['Double Bed', '18m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
       {
         id: '2',
@@ -136,8 +176,13 @@ const hotels = [
         timetype: 'Hourly',
         price: 200,
         condition: ['Double Bed', '25m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
     ],
+    policy: 'Hủy miễn phí trước giờ nhận phòng 1 tiếng.',
   },
   {
     id: '6',
@@ -157,6 +202,10 @@ const hotels = [
         timetype: 'Hourly',
         price: 120,
         condition: ['Double Bed', '18m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
       {
         id: '2',
@@ -164,8 +213,13 @@ const hotels = [
         timetype: 'Hourly',
         price: 200,
         condition: ['Double Bed', '25m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
     ],
+    policy: 'Hủy miễn phí trước giờ nhận phòng 1 tiếng.',
   },
   {
     id: '7',
@@ -185,6 +239,10 @@ const hotels = [
         timetype: 'Hourly',
         price: 120,
         condition: ['Double Bed', '18m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
       {
         id: '2',
@@ -192,8 +250,13 @@ const hotels = [
         timetype: 'Hourly',
         price: 200,
         condition: ['Double Bed', '25m^2', 'Window'],
+        provision: [
+          'Thanh toán tại khách sạn',
+          'Nhận thưởng lên đến 1.080 điểm',
+        ],
       },
     ],
+    policy: 'Hủy miễn phí trước giờ nhận phòng 1 tiếng.',
   },
 ];
 

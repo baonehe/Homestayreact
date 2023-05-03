@@ -6,7 +6,6 @@ import {
   View,
   Image,
   StatusBar,
-  FlatList,
   TouchableOpacity,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -17,7 +16,7 @@ import hotels from '../assets/data/hotels';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {SliderBox} from 'react-native-image-slider-box';
-import {ScrollView, TextInput} from 'react-native-gesture-handler';
+import {ScrollView, TextInput, FlatList} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
 import Notification from './NotiScreen';
@@ -128,7 +127,11 @@ const Home = ({navigation}) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* SearchBar */}
         <View style={styles.searchBar}>
-          <Ionicons name="search-outline" style={styles.searchIcon} />
+          <TouchableOpacity
+            style={styles.searchBtn}
+            onPress={() => navigation.navigate('SearchHomestay')}>
+            <Ionicons name="search-outline" style={styles.searchIcon} />
+          </TouchableOpacity>
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
@@ -181,7 +184,7 @@ const Home = ({navigation}) => {
           paginationBoxStyle={styles.boxSlider}
           ImageComponentStyle={styles.boxImageSlider}
           onCurrentImagePressed={index => console.log(`image ${index} pressed`)}
-          currentImageEmitter={index => console.log(`current pos is: ${index}`)}
+          // currentImageEmitter={index => console.log(`current pos is: ${index}`)}
         />
 
         {/* SalesOff */}
@@ -243,11 +246,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
   },
+  searchBtn: {
+    justifyContent: 'center',
+  },
   searchIcon: {
     color: colors.lightblack,
     fontSize: sizes.iconLarge,
     alignSelf: 'center',
-    marginHorizontal: 10,
+    marginLeft: 10,
   },
 
   //Location

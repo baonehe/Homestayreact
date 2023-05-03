@@ -1,7 +1,8 @@
 import React from 'react';
-import StackNavigator from './navigators/StackNavigator';
 import 'react-native-gesture-handler';
-
+import StackNavigator from './navigators/StackNavigator';
+import store from './components/redux/store';
+import {Provider} from 'react-redux';
 // import {
 //   AnimatedTabBarNavigator,
 //   // DotSize,
@@ -12,7 +13,11 @@ import 'react-native-gesture-handler';
 // // const Tabs = AnimatedTabBarNavigator();
 
 const App = () => {
-  return <StackNavigator />;
+  return (
+    <Provider store={store}>
+      <StackNavigator />
+    </Provider>
+  );
 };
 
 export default App;

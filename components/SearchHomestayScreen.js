@@ -6,7 +6,9 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  Button,
+  TextInput,
+  PermissionsAndroid,
+  ImageBackground,
 } from 'react-native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -14,26 +16,107 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
-import Mapbox from '@rnmapbox/maps';
-import colors from '../assets/consts/colors';
-import sizes from '../assets/consts/sizes';
-import hotels from '../assets/data/hotels';
-import images from '../assets/images';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import Geolocation from '@react-native-community/geolocation';
+import database from '@react-native-firebase/database';
+import colors from '../assets/consts/colors';
+import images from '../assets/images';
+import sizes from '../assets/consts/sizes';
 
-const tokenMapBox =
-  'sk.eyJ1IjoiZmFuZzEwMTEiLCJhIjoiY2xnMDlubmpqMDFoaDNocDl3b3NxcjVldiJ9.89FqHKLDIfP6IUVYtNy0xg';
-Mapbox.setAccessToken(tokenMapBox);
-
-const SearchHomestay = ({navigation}) => {
+const SearchHomestay = ({navigation, route}) => {
   const screenHeight = Dimensions.get('screen').height;
+  const province = route.params;
 
+  /* Map View */
+  const mapRef = useRef(null);
+  const markerRefs = useMemo(() => ({}), []);
+  const [location, setLocation] = useState(null);
+  const [homestays, setHomestays] = useState(null);
+  const [homestaySuggestions, setHomestaySuggestions] = useState([]);
+  const [selectedMarkerRef, setSelectedMarkerRef] = useState(null);
+
+  const [searchText, setSearchText] = useState('');
+  const [searchResult, setSearchResult] = useState(null);
+
+  const handleSearch = () => {};
+
+  const handleSearchInput = text => {
+    setSearchText(text);
+    if (text !== '') {
+      const filteredHomestays = homestays.filter(homestay =>
+        homestay.name.toLowerCase().includes(text.toLowerCase()),
+      );
+      setHomestaySuggestions(filteredHomestays);
+    } else {
+      setHomestaySuggestions([]);
+    }
+  };
+
+  const handleSelectResult = result => {
+    if (mapRef.current && result && result.coordinates) {
+      mapRef.current.animateToRegion({
+        latitude: result.coordinates.latitude,
+        longitude: result.coordinates.longitude,
+        latitudeDelta: 0.00922,
+        longitudeDelta: 0.00421,
+      });
+    }
+    setSelectedMarkerRef(markerRefs[result.id]);
+    markerRefs[result.id].showCallout();
+  };
+
+  const handleSelectCallout = result => {
+    navigation.navigate('DetailHomestay', result);
+  };
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'App needs access to your location.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        getMyLocation();
+      } else {
+        console.log('Location permission denied');
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const getMyLocation = useCallback(() => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        setLocation({
+          latitude,
+          longitude,
+          latitudeDelta: 0.00922,
+          longitudeDelta: 0.00421,
+        });
+      },
+      error => {
+        console.log(error);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  }, []);
+
+  /* Bottom sheet */
   // hooks
   const sheetRef = useRef(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   // variables
-  const snapPoints = useMemo(() => ['17%', '50%', '95%'], []);
+  const snapPoints = useMemo(() => ['15%', '50%', '93%'], []);
 
   // callbacks
   const handleSheetChange = useCallback(index => {
@@ -43,7 +126,6 @@ const SearchHomestay = ({navigation}) => {
       setSheetOpen(true);
     }
   }, []);
-
   const handleSnapPress = useCallback(index => {
     sheetRef.current?.snapToIndex(index);
   }, []);
@@ -58,10 +140,15 @@ const SearchHomestay = ({navigation}) => {
         onPress={() => navigation.navigate('DetailHomestay', item)}>
         <View style={styles.itemCard}>
           <View style={styles.itemImageContainer}>
-            <Image style={styles.itemImage} source={item.image} />
+            <Image style={styles.itemImage} source={{uri: item.image}} />
           </View>
           <View style={styles.itemInfor}>
-            <Text style={styles.itemName}>{item.name}</Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={styles.itemName}>
+              {item.name}
+            </Text>
             <Text style={styles.itemSlogan}>{item.slogan}</Text>
             <View style={styles.itemDistanceContainer}>
               <Text style={styles.itemDistance}>2.5km</Text>
@@ -84,12 +171,32 @@ const SearchHomestay = ({navigation}) => {
         </View>
       </TouchableOpacity>
     ),
-    [],
+    [navigation],
   );
 
-  // useEffect(() => {
-  //   sheetRef.current?.snapToIndex(2);
-  // });
+  useEffect(() => {
+    requestLocationPermission();
+
+    const reference = database().ref('/data');
+    const unsubscribe = reference.on('value', snapshot => {
+      if (snapshot && snapshot.val) {
+        const data = snapshot.val();
+        const filteredHomestays = Object.values(data).filter(
+          homestay => homestay.province === province,
+        );
+        setHomestays(filteredHomestays);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (location) {
+      mapRef.current?.animateToRegion(location);
+    }
+  }, [location]);
+
   return (
     <SafeAreaView style={styles.container}>
       <GestureHandlerRootView>
@@ -103,34 +210,126 @@ const SearchHomestay = ({navigation}) => {
             />
           </View>
           <View style={styles.searchBar}>
-            <Feather
-              name="search"
-              size={sizes.iconExtraSmall}
-              color={colors.lightblack}
-              style={styles.iconSearch}
-            />
             <View style={styles.searchBarInfor}>
-              <Text style={styles.location}>Binh Thanh - Ho Chi Minh</Text>
-              <Text style={styles.time}>Hourly * Anytime </Text>
+              <TextInput
+                style={styles.location}
+                placeholder="Search for a location"
+                value={searchText}
+                onChangeText={handleSearchInput}
+              />
+              <TouchableOpacity onPress={handleSearch}>
+                <Feather
+                  name="search"
+                  size={sizes.iconExtraSmall}
+                  color={colors.lightblack}
+                  style={styles.iconSearch}
+                />
+              </TouchableOpacity>
+
+              {/* <Text style={styles.time}>Hourly * Anytime </Text> */}
             </View>
           </View>
           <View style={styles.headerRight}>
-            <Ionicons
-              name="options"
-              size={sizes.iconSmall}
-              color={colors.dark}
-              style={{transform: [{rotate: '90deg'}]}}
-            />
+            <TouchableOpacity>
+              <Ionicons
+                name="options"
+                size={sizes.iconSmall}
+                color={colors.dark}
+                style={{transform: [{rotate: '90deg'}]}}
+              />
+            </TouchableOpacity>
           </View>
         </View>
-        <Mapbox.MapView style={[styles.map, {height: screenHeight}]} />
+        {homestaySuggestions.length > 0 && searchText !== '' && (
+          <View
+            style={{
+              alignItems: 'center',
+              width: '100%',
+              height: 100,
+              zIndex: 10,
+              top: -10,
+            }}>
+            {homestaySuggestions.slice(0, 5).map(suggestedHomestay => {
+              return (
+                <TouchableOpacity
+                  key={suggestedHomestay.id}
+                  style={{
+                    backgroundColor: 'white',
+                    borderColor: colors.black,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    width: '75%',
+                  }}
+                  onPress={() => handleSelectResult(suggestedHomestay)}>
+                  <Text
+                    style={{padding: 10, fontSize: 15, color: colors.black}}>
+                    {suggestedHomestay.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          onMapReady={getMyLocation}
+          ref={mapRef}
+          style={[styles.map, {height: screenHeight}]}
+          showsMyLocationButton={true}
+          showsUserLocation={true}>
+          {homestays &&
+            homestays.map(home => (
+              <Marker
+                key={home.id}
+                ref={marker => (markerRefs[home.id] = marker)}
+                icon={images.marker}
+                coordinate={{
+                  latitude: home.coordinates.latitude,
+                  longitude: home.coordinates.longitude,
+                }}>
+                <Callout
+                  style={styles.itemMarker}
+                  onPress={() => handleSelectCallout(home)}>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                      style={styles.itemMarkerName}>
+                      {home.name}
+                    </Text>
+                    <Text
+                      style={{
+                        width: 200,
+                        height: 150,
+                        position: 'relative',
+                        bottom: 30,
+                      }}>
+                      <Image
+                        style={styles.itemMarkerImage}
+                        source={{uri: home.image}}
+                        resizeMode="cover"
+                      />
+                    </Text>
+
+                    <Text style={styles.itemMarkerPrice}>{home.price}</Text>
+                  </View>
+                </Callout>
+              </Marker>
+            ))}
+        </MapView>
+
         <BottomSheet
           ref={sheetRef}
           index={2}
           snapPoints={snapPoints}
           onChange={handleSheetChange}>
           <BottomSheetFlatList
-            data={hotels}
+            data={homestays}
             renderItem={renderItem}
             contentContainerStyle={styles.flatList}
           />
@@ -166,7 +365,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginBottom: 20,
+    marginVertical: 10,
   },
   headerLeft: {
     marginLeft: 15,
@@ -180,17 +379,22 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: colors.lightwhite,
   },
-  iconSearch: {
-    marginHorizontal: 10,
-    marginVertical: 8,
-  },
   searchBarInfor: {
-    justifyContent: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  iconSearch: {
+    marginRight: 12,
   },
   location: {
-    fontFamily: 'Lato-Bold',
-    fontSize: 14,
+    fontFamily: 'Lato-Regular',
+    fontSize: 16,
+    width: 240,
+    flexWrap: 'wrap',
     color: colors.black,
+    marginLeft: 12,
   },
   time: {
     fontFamily: 'Lato-Regular',
@@ -275,7 +479,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 135,
+    bottom: 115,
     right: '37.5%',
   },
   mapBtn: {
@@ -300,16 +504,29 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  // page: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
-  // container: {
-  //   height: 300,
-  //   width: 300,
-  // },
-  // map: {
-  //   flex: 1,
-  // },
+  itemMarker: {
+    height: 200,
+    width: 200,
+  },
+  itemMarkerName: {
+    fontSize: 15,
+    alignSelf: 'stretch',
+    fontFamily: 'Merriweather-Bold',
+    color: colors.primary,
+    marginTop: 8,
+    marginHorizontal: 2,
+  },
+  itemMarkerImage: {
+    width: 200,
+    height: 100,
+    borderRadius: 12,
+  },
+  itemMarkerPrice: {
+    fontSize: 20,
+    fontFamily: 'Merriweather-Bold',
+    color: colors.red,
+    position: 'relative',
+    bottom: 20,
+    marginHorizontal: 5,
+  },
 });

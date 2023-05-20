@@ -3,256 +3,1052 @@
   "status": "",
   "data": [
     {
-      "id": "1",
-      "name": "Silver Hotel & SPA",
-      "location": "Green street,Central district",
-      "price": 120,
-      "image": "require('../images/hotel1.jpg')",
-      "slogan": "Nơi tình cảm thăng hoa",
+      "Extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
+      "coordinates": {
+        "latitude": 10.768033,
+        "longitude": 106.698518
+      },
       "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "1",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel1.jpg?alt=media&token=b95564ea-8740-4817-aa50-80c5248373f9",
+      "location": "165/47 Nguyễn Thái Bình, District 1, Ho Chi Minh City",
+      "name": "Song Anh Indochina Studios Nguyen Thai Binh",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 120,
+      "province": "Thành phố Hồ Chí Minh",
       "rating": "4.7",
       "ratingvote": "(2.1m)",
       "rooms": [
         {
-          "id": "1",
-          "roomtype": "Single Room",
-          "timetype": "Hourly",
-          "price": 120,
           "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
         },
         {
-          "id": "2",
-          "roomtype": "Double Room",
-          "timetype": "Hourly",
-          "price": 200,
           "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
         }
       ],
-      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng."
+      "slogan": "Nơi tình cảm thăng hoa"
     },
     {
-      "id": "2",
-      "name": "Bring Hotel",
-      "location": "Yuki street",
-      "price": 70,
-      "image": "require('../images/hotel2.jpg')",
-      "slogan": "Giao lưu ân ái thoải mái",
+      "coordinates": {
+        "latitude": 10.85046,
+        "longitude": 106.789405
+      },
       "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "2",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel2.jpg?alt=media&token=c90f4c66-d808-4226-8fd5-bc6dfa977ee4",
+      "location": "No. 12, Street 106, Tang Nhon Phu A, District 9, Ho Chi Minh City",
+      "name": "RedDoorz Thien An Hotel Man Thien",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 70,
+      "province": "Thành phố Hồ Chí Minh",
       "rating": "4.6",
       "ratingvote": "(2m)",
       "rooms": [
         {
-          "id": "1",
-          "roomtype": "Single Room",
-          "timetype": "Hourly",
-          "price": 120,
           "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
         },
         {
-          "id": "2",
-          "roomtype": "Double Room",
-          "timetype": "Hourly",
-          "price": 200,
           "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
         }
       ],
-      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng."
+      "slogan": "Giao lưu ân ái thoải mái"
     },
     {
-      "id": "3",
-      "name": "Aluna Hotel",
-      "location": "Almond street",
-      "price": 90,
-      "image": "require('../images/hotel3.jpg')",
-      "slogan": "Độc - lạ - rẻ - trẻ - khỏe",
+      "coordinates": {
+        "latitude": 10.767735,
+        "longitude": 106.698607
+      },
       "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "3",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "Nguyễn Thái Bình 165/42, District 1, Ho Chi Minh City",
+      "name": "PIANO HOTEL",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Thành phố Hồ Chí Minh",
       "rating": "4.0",
       "ratingvote": "(1.2m)",
       "rooms": [
         {
-          "id": "1",
-          "roomtype": "Single Room",
-          "timetype": "Hourly",
-          "price": 120,
           "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
         },
         {
-          "id": "2",
-          "roomtype": "Double Room",
-          "timetype": "Hourly",
-          "price": 200,
           "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
         }
       ],
-      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng."
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "coordinates": {
+        "latitude": 10.768084,
+        "longitude": 106.697597
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
       "id": "4",
-      "name": "Green Hotel",
-      "location": "Main street",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel4.jpg?alt=media&token=3b06c31d-5a4e-435b-a488-6694291b8dfa",
+      "location": "145 Ky Con , District 1, Ho Chi Minh City",
+      "name": "Vân Anh Luxury",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
       "price": 100,
-      "image": "require('../images/hotel4.jpg')",
-      "slogan": "Không chỉ là nơi để nghỉ",
-      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "province": "Thành phố Hồ Chí Minh",
       "rating": "4.7",
       "ratingvote": "(2.4m)",
       "rooms": [
         {
-          "id": "1",
-          "roomtype": "Single Room",
-          "timetype": "Hourly",
-          "price": 120,
           "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
         },
         {
-          "id": "2",
-          "roomtype": "Double Room",
-          "timetype": "Hourly",
-          "price": 200,
           "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
         }
       ],
-      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng."
+      "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "coordinates": {
+        "latitude": 10.864336,
+        "longitude": 106.782151
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
       "id": "5",
-      "name": "Green Hotel",
-      "location": "Main street",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel4.jpg?alt=media&token=3b06c31d-5a4e-435b-a488-6694291b8dfa",
+      "location": "76/2K Le Van Chi, Linh Trung Ward, Thu Duc District, Thu Duc District, Ho Chi Minh City",
+      "name": "Ha Long Hotel Thủ Đức HCMC",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
       "price": 100,
-      "image": "require('../images/hotel4.jpg')",
-      "slogan": "Không chỉ là nơi để nghỉ",
-      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "province": "Thành phố Hồ Chí Minh",
       "rating": "4.7",
       "ratingvote": "(2.4m)",
       "rooms": [
         {
-          "id": "1",
-          "roomtype": "Single Room",
-          "timetype": "Hourly",
-          "price": 120,
           "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
         },
         {
-          "id": "2",
-          "roomtype": "Double Room",
-          "timetype": "Hourly",
-          "price": 200,
           "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
         }
       ],
-      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng."
+      "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "coordinates": {
+        "latitude": 10.767191,
+        "longitude": 106.699116
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
       "id": "6",
-      "name": "Green Hotel",
-      "location": "Main street",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel4.jpg?alt=media&token=3b06c31d-5a4e-435b-a488-6694291b8dfa",
+      "location": "Nguyễn Thái Bình 165/72, District 1, Ho Chi Minh City",
+      "name": "Saigon Cozy House & coffee",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
       "price": 100,
-      "image": "require('../images/hotel4.jpg')",
-      "slogan": "Không chỉ là nơi để nghỉ",
-      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "province": "Thành phố Hồ Chí Minh",
       "rating": "4.7",
       "ratingvote": "(2.4m)",
       "rooms": [
         {
-          "id": "1",
-          "roomtype": "Single Room",
-          "timetype": "Hourly",
-          "price": 120,
           "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
         },
         {
-          "id": "2",
-          "roomtype": "Double Room",
-          "timetype": "Hourly",
-          "price": 200,
           "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
         }
       ],
-      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng."
+      "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
-      "id": "7",
-      "name": "Green Hotel",
-      "location": "Main street",
-      "price": 100,
-      "image": "require('../images/hotel4.jpg')",
-      "slogan": "Không chỉ là nơi để nghỉ",
+      "coordinates": {
+        "latitude": 10.862906,
+        "longitude": 106.759269
+      },
       "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "7",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel4.jpg?alt=media&token=3b06c31d-5a4e-435b-a488-6694291b8dfa",
+      "location": "No.1A, D2 Street, Tan Hai Minh Residence, Linh Tay, Thu Duc, Thu Duc District, Ho Chi Minh City",
+      "name": "RedDoorz Tahami Hotel near Kha Van Can",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 100,
+      "province": "Thành phố Hồ Chí Minh",
       "rating": "4.7",
       "ratingvote": "(2.4m)",
       "rooms": [
         {
-          "id": "1",
-          "roomtype": "Single Room",
-          "timetype": "Hourly",
-          "price": 120,
           "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
         },
         {
-          "id": "2",
-          "roomtype": "Double Room",
-          "timetype": "Hourly",
-          "price": 200,
           "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
           "provision": [
             "Thanh toán tại khách sạn",
             "Nhận thưởng lên đến 1.080 điểm"
-          ]
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
         }
       ],
-      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng."
+      "slogan": "Không chỉ là nơi để nghỉ"
+    },
+    {
+      "coordinates": {
+        "latitude": 10.868664,
+        "longitude": 106.76276
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "8",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel4.jpg?alt=media&token=3b06c31d-5a4e-435b-a488-6694291b8dfa",
+      "location": "1816a Đường Phạm Văn Đồng, Linh Xuân Thôn",
+      "name": "Opal Boulevard - Căn hộ tiện nghi, giá rẻ",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 100,
+      "province": "Thành phố Hồ Chí Minh",
+      "rating": "4.7",
+      "ratingvote": "(2.4m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Không chỉ là nơi để nghỉ"
+    },
+    {
+      "coordinates": {
+        "latitude": 10.768019,
+        "longitude": 106.697788
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "9",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel4.jpg?alt=media&token=3b06c31d-5a4e-435b-a488-6694291b8dfa",
+      "location": "Phường Nguyễn Thái Bình 146- 148 Đường Ký Con, District 1, Ho Chi Minh City, Vietnam",
+      "name": "Triple E Hotel Metro Ben Thanh",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 100,
+      "province": "Thành phố Hồ Chí Minh",
+      "rating": "4.7",
+      "ratingvote": "(2.4m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Không chỉ là nơi để nghỉ"
+    },
+    {
+      "coordinates": {
+        "latitude": 10.767399,
+        "longitude": 106.699232
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "10",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel4.jpg?alt=media&token=3b06c31d-5a4e-435b-a488-6694291b8dfa",
+      "location": "165/67 Nguyễn Thái Bình, Quận 1, District 1, Ho Chi Minh City",
+      "name": "Sai Gon Apartments",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 100,
+      "province": "Thành phố Hồ Chí Minh",
+      "rating": "4.7",
+      "ratingvote": "(2.4m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Không chỉ là nơi để nghỉ"
+    },
+    {
+      "coordinates": {
+        "latitude": 15.887314,
+        "longitude": 108.360806
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "11",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "Võng Nhi - Cẩm Thanh, Hội An, Quảng Nam",
+      "name": "Rice Village Homestay",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Quảng Nam",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 15.871652,
+        "longitude": 108.342392
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "12",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "340 Nguyễn Tri Phương, Cẩm Nam, Hội An",
+      "name": "Calm House B&B Hoi An",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Quảng Nam",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 21.030377,
+        "longitude": 105.856498
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "13",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "7 Hàng Vôi, Quận Hoàn Kiếm",
+      "name": "Alisa Hotel & Spa",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Hà Nội",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 21.032655,
+        "longitude": 105.849387
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "14",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "33 Hang Quat Street, Hoan Kiem, Hanoi, Vietnam, Quận Hoàn Kiếm",
+      "name": "Golden Sun Hotel",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Hà Nội",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 21.030406,
+        "longitude": 105.849908
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "15",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "198b Trần Bạch Đằng, Mỹ An, Ngũ Hành Sơn",
+      "name": "Golden Lotus Luxury",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Đà Nẵng",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 16.053358,
+        "longitude": 108.246036
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "16",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "69-71-73 Do Bi Street, My Khe Beach, Ngu Hanh Son District",
+      "name": "Menora Grand Da Nang",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Đà Nẵng",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 20.846953,
+        "longitude": 106.710116
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "17",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "Hoàng Thế Thiện 135",
+      "name": "Novatel Hotel & Apartment",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Hải Phòng",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 20.860827,
+        "longitude": 106.685083
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "18",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "20b Minh Khai 8",
+      "name": "The Opera Hotel Hải Phòng",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Hải Phòng",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 10.017039,
+        "longitude": 105.788386
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "19",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "2-4 B22 Street, Hung Phu 1 Residence, Hung Phu, Cai Rang",
+      "name": "Lucasta Hotel",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Cần Thơ",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
+    },
+    {
+      "coordinates": {
+        "latitude": 9.987661,
+        "longitude": 105.740093
+      },
+      "details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit",
+      "id": "20",
+      "image": "https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/hotel3.jpg?alt=media&token=4beb796d-a5e5-4af4-9663-de56b40baf08",
+      "location": "542, Area No.3, Ba Lang Ward, Cai Rang District",
+      "name": "Can Tho Ecolodge",
+      "policy": "Hủy miễn phí trước giờ nhận phòng 1 tiếng.",
+      "price": 90,
+      "province": "Cần Thơ",
+      "rating": "4.0",
+      "ratingvote": "(1.2m)",
+      "rooms": [
+        {
+          "condition": ["Double Bed", "18m^2", "Window"],
+          "id": "1",
+          "price": 120,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Single Room",
+          "timetype": "Hourly"
+        },
+        {
+          "condition": ["Double Bed", "25m^2", "Window"],
+          "id": "2",
+          "price": 200,
+          "provision": [
+            "Thanh toán tại khách sạn",
+            "Nhận thưởng lên đến 1.080 điểm"
+          ],
+          "roomtype": "Double Room",
+          "timetype": "Hourly"
+        }
+      ],
+      "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     }
-  ]
+  ],
+  "locations": {
+    "hanoi": {
+      "name": "Hà Nội",
+      "northwest": {
+        "latitude": 21.0285,
+        "longitude": 105.8542
+      },
+      "southeast": {
+        "latitude": 20.7047,
+        "longitude": 106.3418
+      }
+    },
+    "hochiminh": {
+      "name": "Thành phố Hồ Chí Minh",
+      "northwest": {
+        "latitude": 10.7629,
+        "longitude": 106.682
+      },
+      "southeast": {
+        "latitude": 10.3831,
+        "longitude": 107.336
+      }
+    },
+    "danang": {
+      "name": "Đà Nẵng",
+      "northwest": {
+        "latitude": 16.0544,
+        "longitude": 108.2022
+      },
+      "southeast": {
+        "latitude": 15.8717,
+        "longitude": 108.0397
+      }
+    },
+    "haiphong": {
+      "name": "Hải Phòng",
+      "northwest": {
+        "latitude": 20.8623,
+        "longitude": 106.632
+      },
+      "southeast": {
+        "latitude": 20.7623,
+        "longitude": 106.732
+      }
+    },
+    "cantho": {
+      "name": "Cần Thơ",
+      "northwest": {
+        "latitude": 10.0383,
+        "longitude": 105.7883
+      },
+      "southeast": {
+        "latitude": 9.9322,
+        "longitude": 105.7983
+      }
+    },
+    "khanhhoa": {
+      "name": "Khánh Hòa",
+      "northwest": {
+        "latitude": 12.2894,
+        "longitude": 109.2036
+      },
+      "southeast": {
+        "latitude": 11.9864,
+        "longitude": 109.436
+      }
+    },
+    "hue": {
+      "name": "Huế",
+      "northwest": {
+        "latitude": 16.4637,
+        "longitude": 107.5909
+      },
+      "southeast": {
+        "latitude": 16.3003,
+        "longitude": 107.7216
+      }
+    },
+    "lamdong": {
+      "name": "Lâm Đồng",
+      "northwest": {
+        "latitude": 11.9404,
+        "longitude": 108.4422
+      },
+      "southeast": {
+        "latitude": 11.8705,
+        "longitude": 108.754
+      }
+    },
+    "quangnam": {
+      "name": "Quảng Nam",
+      "northwest": {
+        "latitude": 15.7607,
+        "longitude": 107.9775
+      },
+      "southeast": {
+        "latitude": 15.2704,
+        "longitude": 108.2981
+      }
+    },
+    "vungtau": {
+      "name": "Vũng Tàu",
+      "northwest": {
+        "latitude": 10.3601,
+        "longitude": 107.0849
+      },
+      "southeast": {
+        "latitude": 10.3083,
+        "longitude": 107.285
+      }
+    },
+    "binhthuan": {
+      "name": "Bình Thuận",
+      "northwest": {
+        "latitude": 11.2586,
+        "longitude": 108.9925
+      },
+      "southeast": {
+        "latitude": 10.8371,
+        "longitude": 109.3154
+      }
+    },
+    "binhdinh": {
+      "name": "Bình Định",
+      "northwest": {
+        "latitude": 14.0983,
+        "longitude": 108.2356
+      },
+      "southeast": {
+        "latitude": 13.6156,
+        "longitude": 109.2307
+      }
+    },
+    "dongnai": {
+      "name": "Đồng Nai",
+      "northwest": {
+        "latitude": 11.249,
+        "longitude": 107.1614
+      },
+      "southeast": {
+        "latitude": 10.7396,
+        "longitude": 107.6041
+      }
+    },
+    "nghean": {
+      "name": "Nghệ An",
+      "northwest": {
+        "latitude": 19.2345,
+        "longitude": 104.9204
+      },
+      "southeast": {
+        "latitude": 18.2333,
+        "longitude": 105.5434
+      }
+    },
+    "thanhhoa": {
+      "name": "Thanh Hóa",
+      "northwest": {
+        "latitude": 20.0414,
+        "longitude": 105.4772
+      },
+      "southeast": {
+        "latitude": 19.4735,
+        "longitude": 105.7856
+      }
+    },
+    "namdinh": {
+      "name": "Nam Định",
+      "northwest": {
+        "latitude": 20.4164,
+        "longitude": 105.544
+      },
+      "southeast": {
+        "latitude": 20.0757,
+        "longitude": 106.0774
+      }
+    },
+    "ninhbinh": {
+      "name": "Ninh Bình",
+      "northwest": {
+        "latitude": 20.267,
+        "longitude": 105.975
+      },
+      "southeast": {
+        "latitude": 19.9974,
+        "longitude": 106.3019
+      }
+    },
+    "quangninh": {
+      "name": "Quảng Ninh",
+      "northwest": {
+        "latitude": 21.0656,
+        "longitude": 106.7447
+      },
+      "southeast": {
+        "latitude": 20.5466,
+        "longitude": 107.5624
+      }
+    },
+    "laocai": {
+      "name": "Lào Cai",
+      "northwest": {
+        "latitude": 22.4856,
+        "longitude": 103.9726
+      },
+      "southeast": {
+        "latitude": 21.3832,
+        "longitude": 105.6369
+      }
+    },
+    "dienbien": {
+      "name": "Điện Biên",
+      "northwest": {
+        "latitude": 21.9361,
+        "longitude": 102.6186
+      },
+      "southeast": {
+        "latitude": 21.5458,
+        "longitude": 103.3876
+      }
+    }
+  }
 }

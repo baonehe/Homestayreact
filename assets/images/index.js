@@ -18,6 +18,7 @@ const images = {
 
   // Map
   map: require('./Map.png'),
+  marker: require('./marker.png'),
 };
 
 module.exports = images;

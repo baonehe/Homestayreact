@@ -130,7 +130,9 @@ const DetailHomestayScreen = ({navigation, route}) => {
   return (
     <GestureHandlerRootView contentContainerStyle={styles.container}>
       <ScrollView showsVerticalScrollIndicator={true}>
-        <ImageBackground source={homestay.image} style={styles.headerImage}>
+        <ImageBackground
+          source={{uri: homestay.image}}
+          style={styles.headerImage}>
           <View style={styles.header}>
             <Icon
               name="arrow-back-ios"

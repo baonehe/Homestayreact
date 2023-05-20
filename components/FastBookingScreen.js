@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 30,
     marginTop: 30,
+    marginBottom: 10,
     marginLeft: 100,
     fontFamily: 'Inter-Bold'
   },
@@ -86,9 +87,9 @@ const styles = StyleSheet.create({
   //listHotel
 
   flatList: {
-    marginTop: 20,
+    marginTop: 10,
     marginHorizontal:10,
-    paddingBottom: 120,
+    paddingBottom: 100,
   },
   containerCard:{
     backgroundColor: colors.white,

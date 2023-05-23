@@ -10,7 +10,7 @@ const colors = {
   darkgray: '#666',
   gray: '#858585',
   gray2: '#C7C7C7',
-  lightgray: '#D9D9D9',
+  lightgray: '#F5F5F5',
   yellow: '#FCB446',
   red: '#C44444',
   transparent: 'rgba(0,0,0,0)',

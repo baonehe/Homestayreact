@@ -3,11 +3,11 @@ import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import colors from '../assets/consts/colors';
-import sizes from '../assets/consts/sizes';
-import TopTabsNavigator2 from '../navigators/TopTabsNavigator2';
+import colors from '../../assets/consts/colors';
+import sizes from '../../assets/consts/sizes';
+import TopTabsNavigator2 from '../../navigators/TopTabsNavigator2';
 
-const Notification = ({navigation,route}) => {
+const Notification = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>

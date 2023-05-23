@@ -22,10 +22,10 @@ import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 // import RNDateTimePicker, {
 //   DateTimePickerAndroid,
 // } from '@react-native-community/datetimepicker';
-import TimestampPicker from './TimestampPicker';
-import colors from '../assets/consts/colors';
-import sizes from '../assets/consts/sizes';
-import images from '../assets/images';
+import TimestampPicker from '../SupComponent/TimestampPicker';
+import colors from '../../assets/consts/colors';
+import sizes from '../../assets/consts/sizes';
+import images from '../../assets/images';
 
 const DetailHomestayScreen = ({navigation, route}) => {
   const homestay = route.params;

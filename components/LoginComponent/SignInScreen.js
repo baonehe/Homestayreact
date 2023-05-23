@@ -10,8 +10,8 @@ import {
   Input,
   Alert,
 } from 'react-native';
-import images from '../assets/images';
-import colors from '../assets/consts/colors';
+import images from '../../assets/images';
+import colors from '../../assets/consts/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';

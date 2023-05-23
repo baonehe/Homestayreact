@@ -10,10 +10,6 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import colors from '../assets/consts/colors';
-import sizes from '../assets/consts/sizes';
-import images from '../assets/images';
-import hotels from '../assets/data/hotels';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {SliderBox} from 'react-native-image-slider-box';
@@ -23,7 +19,11 @@ import {Picker} from '@react-native-picker/picker';
 import Geolocation from '@react-native-community/geolocation';
 import Notification from './NotiScreen';
 import database from '@react-native-firebase/database';
-import utils from '../assets/consts/utils';
+import utils from '../../assets/consts/utils';
+import colors from '../../assets/consts/colors';
+import sizes from '../../assets/consts/sizes';
+import images from '../../assets/images';
+import hotels from '../../assets/data/hotels';
 
 const Home = ({navigation}) => {
   const [locations, setLocations] = useState([]);

@@ -1,13 +1,12 @@
 import React, {useState} from 'react';
 import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
 import {Button} from 'react-native-paper';
-import colors from '../assets/consts/colors';
+import colors from '../../assets/consts/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIoni from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 
-function SignUp({navigation,route}) {
-
+function SignUp({navigation, route}) {
   const [regemail, setEmail] = useState('');
   const [fullname, setFullname] = useState('');
   const [phonenumber, setphonenumber] = useState('');
@@ -19,8 +18,8 @@ function SignUp({navigation,route}) {
       .add({
         name: fullname,
         email: regemail,
-        phone:phonenumber,
-        password:checkpassword,
+        phone: phonenumber,
+        password: checkpassword,
       })
       .then(() => {
         console.log('User added!');

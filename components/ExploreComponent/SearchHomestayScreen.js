@@ -3,30 +3,34 @@ import {
   Text,
   View,
   Dimensions,
-  FlatList,
   TouchableOpacity,
   Image,
   TextInput,
   PermissionsAndroid,
-  ImageBackground,
 } from 'react-native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import BottomSheet, {
+  BottomSheetFlatList,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import {GestureHandlerRootView, FlatList} from 'react-native-gesture-handler';
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
+import RangeSlider from '../SupComponent/RangeSlider';
 import database from '@react-native-firebase/database';
-import colors from '../assets/consts/colors';
-import images from '../assets/images';
-import sizes from '../assets/consts/sizes';
+import colors from '../../assets/consts/colors';
+import images from '../../assets/images';
+import sizes from '../../assets/consts/sizes';
 
 const SearchHomestay = ({navigation, route}) => {
   const screenHeight = Dimensions.get('screen').height;
   const province = route.params;
+  const [filters, setFilters] = useState({});
 
   /* Map View */
   const mapRef = useRef(null);
@@ -113,24 +117,21 @@ const SearchHomestay = ({navigation, route}) => {
   /* Bottom sheet */
   // hooks
   const sheetRef = useRef(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetRefOpen, setSheetRefOpen] = useState(false);
 
   // variables
-  const snapPoints = useMemo(() => ['15%', '50%', '93%'], []);
+  const snapRefPoints = useMemo(() => ['15%', '50%', '93%'], []);
 
   // callbacks
-  const handleSheetChange = useCallback(index => {
+  const handleRefChange = useCallback(index => {
     if (index === 0) {
-      setSheetOpen(false);
+      setSheetRefOpen(false);
     } else {
-      setSheetOpen(true);
+      setSheetRefOpen(true);
     }
   }, []);
-  const handleSnapPress = useCallback(index => {
+  const handleRefPress = useCallback(index => {
     sheetRef.current?.snapToIndex(index);
-  }, []);
-  const handleClosePress = useCallback(() => {
-    sheetRef.current?.close();
   }, []);
 
   // render
@@ -174,6 +175,61 @@ const SearchHomestay = ({navigation, route}) => {
     [navigation],
   );
 
+  /* Filtersheet */
+  // hooks
+  const sheetFil = useRef(null);
+  const [minValue, setMinValue] = useState(20000);
+  const [maxValue, setMaxValue] = useState(10000000);
+
+  // variables
+  const snapFilPoints = useMemo(() => ['93%'], []);
+
+  const handleFilOpen = useCallback(() => {
+    sheetFil.current?.snapToIndex(0);
+  }, []);
+
+  const handleFilterChange = useCallback((filterName, isChecked) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [filterName]: isChecked,
+    }));
+    console.log(filters);
+  }, []);
+
+  const Fter = ({item}) => {
+    const handleCheckboxChange = isChecked => {
+      handleFilterChange(item, isChecked);
+      console.log(filters[item]);
+    };
+    return (
+      <View
+        style={{
+          width: '100%',
+          paddingHorizontal: 8,
+          marginVertical: 3,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: 'Inter-Regular',
+            color: colors.black,
+          }}>
+          {item}
+        </Text>
+        <BouncyCheckbox
+          size={20}
+          fillColor={colors.primary}
+          unfillColor={colors.white}
+          // onPress={() => handleCheckboxChange(!filters[item])}
+          // isChecked={filters[item]}
+        />
+      </View>
+    );
+  };
+
   useEffect(() => {
     requestLocationPermission();
 
@@ -190,6 +246,17 @@ const SearchHomestay = ({navigation, route}) => {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const reference = database().ref('/extension');
+    const unsubscribe = reference.on('value', snapshot => {
+      if (snapshot && snapshot.val) {
+        const data = snapshot.val();
+        setFilters(data);
+      }
+    });
+    return () => unsubscribe();
+  });
 
   useEffect(() => {
     if (location) {
@@ -230,7 +297,7 @@ const SearchHomestay = ({navigation, route}) => {
             </View>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => handleFilOpen()}>
               <Ionicons
                 name="options"
                 size={sizes.iconSmall}
@@ -326,24 +393,95 @@ const SearchHomestay = ({navigation, route}) => {
         <BottomSheet
           ref={sheetRef}
           index={2}
-          snapPoints={snapPoints}
-          onChange={handleSheetChange}>
+          snapPoints={snapRefPoints}
+          onChange={handleRefChange}>
           <BottomSheetFlatList
             data={homestays}
             renderItem={renderItem}
             contentContainerStyle={styles.flatList}
           />
         </BottomSheet>
-        {sheetOpen && (
+        {sheetRefOpen && (
           <View style={styles.mapViewBtn}>
             <TouchableOpacity
               style={styles.mapBtn}
-              onPress={() => handleSnapPress(0)}>
+              onPress={() => handleRefPress(0)}>
               <Text style={styles.mapText}>Map</Text>
               <Image style={styles.mapImage} source={images.map} />
             </TouchableOpacity>
           </View>
         )}
+
+        <BottomSheet
+          ref={sheetFil}
+          index={-1}
+          snapPoints={snapFilPoints}
+          enablePanDownToClose={true}>
+          <BottomSheetScrollView
+            contentContainerStyle={styles.contentContainer}>
+            <View style={styles.filterHeader}>
+              <View style={{flex: 1}} />
+              <Text style={styles.filterLabel}>Filter</Text>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'flex-end',
+                }}>
+                <TouchableOpacity>
+                  <Text style={styles.filterReset}>Reset</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.priceContainer}>
+              <Text style={styles.categoryLabel}>Price range</Text>
+              <View style={{marginVertical: 20}}>
+                <RangeSlider
+                  sliderWidth={320}
+                  min={20000}
+                  max={10000000}
+                  step={10000}
+                  onValueChange={range => {
+                    setMinValue(range.min);
+                    setMaxValue(range.max);
+                  }}
+                />
+                <View
+                  style={{
+                    width: '100%',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 25,
+                  }}>
+                  <View style={styles.priceFrame}>
+                    <Text style={styles.priceItemLabel}>Min price</Text>
+                    <Text style={styles.priceValue}>{minValue}</Text>
+                  </View>
+                  <View style={styles.priceFrame}>
+                    <Text style={styles.priceItemLabel}>Max price</Text>
+                    <Text style={styles.priceValue}>{maxValue}</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.facilitiesContainer}>
+              <Text style={styles.categoryLabel}>Facilites</Text>
+              <FlatList
+                data={filters}
+                renderItem={({item}) => <Fter item={item} />}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={styles.flatList}
+              />
+            </View>
+
+            <View>
+              <TouchableOpacity style={styles.applyBtn}>
+                <Text style={styles.applyText}>Apply</Text>
+              </TouchableOpacity>
+            </View>
+          </BottomSheetScrollView>
+        </BottomSheet>
       </GestureHandlerRootView>
     </SafeAreaView>
   );
@@ -528,5 +666,83 @@ const styles = StyleSheet.create({
     position: 'relative',
     bottom: 20,
     marginHorizontal: 5,
+  },
+
+  filterHeader: {
+    flexDirection: 'row',
+    width: '100%',
+    paddingVertical: 6,
+    paddingBottom: 12,
+    borderBottomWidth: 0.5,
+    borderColor: colors.gray,
+  },
+  filterLabel: {
+    fontSize: 20,
+    fontFamily: 'Lato-Bold',
+    color: colors.black,
+    textAlign: 'center',
+    flex: 1,
+  },
+  filterReset: {
+    fontSize: 18,
+    fontFamily: 'Lato-Bold',
+    fontWeight: '600',
+    color: colors.primary,
+    paddingRight: 15,
+  },
+  priceContainer: {
+    flexDirection: 'column',
+    width: '100%',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 0.5,
+    borderColor: colors.gray,
+  },
+  categoryLabel: {
+    fontSize: 18,
+    fontFamily: 'Lato-Bold',
+    color: colors.black,
+  },
+  priceFrame: {
+    flexDirection: 'column',
+    width: 150,
+    backgroundColor: colors.lightgray,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  priceItemLabel: {
+    fontSize: 13,
+    fontFamily: 'Inter-Regular',
+    color: colors.darkgray,
+  },
+  priceValue: {
+    fontSize: 18,
+    fontFamiLy: 'Lato-Bold',
+    fontWeight: '600',
+    color: colors.black,
+  },
+
+  facilitiesContainer: {
+    flexDirection: 'column',
+    width: '100%',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 0.5,
+    borderColor: colors.gray,
+  },
+
+  applyText: {
+    color: colors.white,
+    fontSize: 15,
+    fontFamily: 'Merriweather-Bold',
+  },
+  applyBtn: {
+    height: 40,
+    width: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.dark,
+    borderRadius: 20,
   },
 });

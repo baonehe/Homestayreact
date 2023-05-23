@@ -3,11 +3,11 @@
   "status": "",
   "data": [
     {
-      "Extension": {
+      "extension": {
         "Buffet": 1,
         "Car_park": 1,
-        "MotorBike": 0,
-        "Wifi": 0
+        "MotorBike": 1,
+        "Wifi": 1
       },
       "coordinates": {
         "latitude": 10.768033,
@@ -50,6 +50,12 @@
       "slogan": "Nơi tình cảm thăng hoa"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.85046,
         "longitude": 106.789405
@@ -91,6 +97,12 @@
       "slogan": "Giao lưu ân ái thoải mái"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.767735,
         "longitude": 106.698607
@@ -132,6 +144,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.768084,
         "longitude": 106.697597
@@ -173,6 +191,12 @@
       "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.864336,
         "longitude": 106.782151
@@ -214,6 +238,12 @@
       "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.767191,
         "longitude": 106.699116
@@ -255,6 +285,12 @@
       "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.862906,
         "longitude": 106.759269
@@ -296,6 +332,12 @@
       "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.868664,
         "longitude": 106.76276
@@ -337,6 +379,12 @@
       "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.768019,
         "longitude": 106.697788
@@ -378,6 +426,12 @@
       "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.767399,
         "longitude": 106.699232
@@ -419,6 +473,12 @@
       "slogan": "Không chỉ là nơi để nghỉ"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 15.887314,
         "longitude": 108.360806
@@ -460,6 +520,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 15.871652,
         "longitude": 108.342392
@@ -501,6 +567,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 21.030377,
         "longitude": 105.856498
@@ -542,6 +614,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 21.032655,
         "longitude": 105.849387
@@ -583,6 +661,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 21.030406,
         "longitude": 105.849908
@@ -624,6 +708,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 16.053358,
         "longitude": 108.246036
@@ -665,6 +755,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 20.846953,
         "longitude": 106.710116
@@ -706,6 +802,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 20.860827,
         "longitude": 106.685083
@@ -747,6 +849,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 10.017039,
         "longitude": 105.788386
@@ -788,6 +896,12 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     },
     {
+      "extension": {
+        "Buffet": 1,
+        "Car_park": 1,
+        "MotorBike": 0,
+        "Wifi": 0
+      },
       "coordinates": {
         "latitude": 9.987661,
         "longitude": 105.740093
@@ -829,6 +943,7 @@
       "slogan": "Độc - lạ - rẻ - trẻ - khỏe"
     }
   ],
+  "extension": ["Buffet", "Car_park", "MotorBike", "Wifi"],
   "locations": {
     "hanoi": {
       "name": "Hà Nội",

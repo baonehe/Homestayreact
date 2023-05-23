@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import colors from '../assets/consts/colors';
+import colors from '../../assets/consts/colors';
 import {ScrollView} from 'react-native-gesture-handler';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconIont from 'react-native-vector-icons/Ionicons';

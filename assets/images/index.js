@@ -9,6 +9,7 @@ const images = {
   couple: require('./Couple.png'),
   travel: require('./Travel.png'),
   luxury: require('./Luxury.png'),
+  line: require('./line.png'),
 
   // Slider
   image1: require('./img1.jpg'),
@@ -18,6 +19,7 @@ const images = {
 
   // Map
   map: require('./Map.png'),
+  marker: require('./marker.png'),
 };
 
 module.exports = images;

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   Button,
   StyleSheet,
@@ -7,22 +7,26 @@ import {
   Image,
   StatusBar,
   TouchableOpacity,
+  PermissionsAndroid,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import colors from '../assets/consts/colors';
-import sizes from '../assets/consts/sizes';
-import images from '../assets/images';
-import hotels from '../assets/data/hotels';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {SliderBox} from 'react-native-image-slider-box';
 import {ScrollView, TextInput, FlatList} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
+import Geolocation from '@react-native-community/geolocation';
 import Notification from './NotiScreen';
 import database from '@react-native-firebase/database';
+import utils from '../../assets/consts/utils';
+import colors from '../../assets/consts/colors';
+import sizes from '../../assets/consts/sizes';
+import images from '../../assets/images';
+import hotels from '../../assets/data/hotels';
 
 const Home = ({navigation}) => {
+  const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState([]);
   const [data, setdata] = useState([]);
 
@@ -61,7 +65,9 @@ const Home = ({navigation}) => {
             <TouchableOpacity
               key={index}
               style={styles.iconContainer}
-              onPress={() => navigation.navigate('SearchHomestay')}>
+              onPress={() =>
+                navigation.navigate('SearchHomestay', selectedLocation)
+              }>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
             </TouchableOpacity>
@@ -72,7 +78,9 @@ const Home = ({navigation}) => {
             <TouchableOpacity
               key={index}
               style={styles.iconContainer}
-              onPress={() => navigation.navigate('SearchHomestay')}>
+              onPress={() =>
+                navigation.navigate('SearchHomestay', selectedLocation)
+              }>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
             </TouchableOpacity>
@@ -124,6 +132,107 @@ const Home = ({navigation}) => {
       </TouchableOpacity>
     );
   };
+
+  const getMyLocation = useCallback(() => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+
+        console.log(latitude, longitude);
+        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${utils.mapKey}`;
+
+        fetch(geocodingUrl)
+          .then(response => response.json())
+          .then(data => {
+            const results = data.results;
+            if (results.length > 0) {
+              for (const component of results[0].address_components) {
+                if (component.types.includes('administrative_area_level_1')) {
+                  const currentProvince = component.long_name;
+                  console.log('Tỉnh/Thành phố hiện tại:', currentProvince);
+
+                  database()
+                    .ref('locations')
+                    .orderByChild('name')
+                    .equalTo(currentProvince)
+                    .once('value', snapshot => {
+                      if (snapshot.exists()) {
+                        console.log(
+                          'Tìm thấy trùng khớp trong Firebase Realtime Database',
+                        );
+                        setSelectedLocation(currentProvince);
+                      } else {
+                        console.log(
+                          'Không tìm thấy trùng khớp trong Firebase Realtime Database',
+                        );
+                      }
+                    });
+                  return currentProvince;
+                }
+              }
+            }
+            console.log('Không xác định được tỉnh/ thành phố.');
+            return null;
+          })
+          .catch(error => {
+            console.log('Lỗi khi lấy địa chỉ từ tọa độ:', error);
+            return null;
+          });
+      },
+      error => {
+        console.log('Error getting current location:', error);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'App needs access to your location.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        getMyLocation();
+      } else {
+        console.log('Location permission denied');
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  useEffect(() => {
+    requestLocationPermission();
+
+    const fetchLocations = async () => {
+      try {
+        const snapshot = await database().ref('locations').once('value');
+        const data = snapshot.val();
+
+        if (data) {
+          const locationList = Object.values(data).map(
+            location => location.name,
+          );
+          const sortedLocations = locationList.sort((a, b) =>
+            a.localeCompare(b),
+          );
+          setLocations(sortedLocations);
+          console.log(sortedLocations);
+          // setSelectedLocation(sortedLocations[0] || '');
+        }
+      } catch (error) {
+        console.log('Error fetching locations:', error);
+      }
+    };
+    fetchLocations();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -179,12 +288,14 @@ const Home = ({navigation}) => {
             onValueChange={(itemValue, itemIndex) =>
               setSelectedLocation(itemValue)
             }>
-            <Picker.Item style={styles.pickerItem} label="Hà Nội" value="HN" />
-            <Picker.Item
-              style={styles.pickerItem}
-              label="Hồ Chí Minh"
-              value="HCM"
-            />
+            {locations.map((location, index) => (
+              <Picker.Item
+                key={index}
+                style={styles.pickerItem}
+                label={location}
+                value={location}
+              />
+            ))}
           </Picker>
         </View>
 

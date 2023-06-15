@@ -10,8 +10,8 @@ import {
   Input,
   Alert,
 } from 'react-native';
-import images from '../assets/images';
-import colors from '../assets/consts/colors';
+import images from '../../assets/images';
+import colors from '../../assets/consts/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -51,8 +51,7 @@ export default function Login({navigation}) {
   };
 
   const LoginIn = async () => {
-    navigation.navigate('BottomTabsNavigator',{email});
-
+    navigation.navigate('BottomTabsNavigator', {email});
   };
   const handleLogin = async () => {
     setIsLoading(true);
@@ -124,7 +123,8 @@ export default function Login({navigation}) {
             placeholder="Password"
             secureTextEntry={isSecure}
             value={password}
-            onChangeText={text => setPassword(text)} />
+            onChangeText={text => setPassword(text)}
+          />
           <Icon
             onPress={() => {
               setisSecure(prev => !prev);

@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState, useRef, useMemo, useCallback} from 'react';
+import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
 import FastImage from 'react-native-fast-image';
 import {SliderBox} from 'react-native-image-slider-box';
 import {
@@ -26,10 +26,15 @@ import TimestampPicker from './TimestampPicker';
 import colors from '../assets/consts/colors';
 import sizes from '../assets/consts/sizes';
 import images from '../assets/images';
+import FavoriteButton from './FavoriteButton';
 
 const DetailHomestayScreen = ({navigation, route}) => {
   const homestay = route.params;
-  // console.log(homestay);
+  const dataArray = Object.entries(homestay.extension).map(([key, value]) => ({
+    key,
+    value,
+  }));
+
   const listImages = [
     images.image1,
     images.image2,
@@ -48,9 +53,46 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
+
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
+
+  const ShowExtension = ({item}) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginStart: 40,
+        }}>
+        {item.key == 'Buffet' && item.value == '1' && (
+          <View>
+            <Ionicons name="restaurant" size={30} color="black" />
+            <Text>{item.key}</Text>
+          </View>
+        )}
+        {item.key == 'Car_park' && item.value == '1' && (
+          <View>
+            <MaterialCommunityIcons name="parking" size={30} color="black" />
+            <Text>{item.key}</Text>
+          </View>
+        )}
+        {item.key == 'MotorBike' && item.value == '1' && (
+          <View>
+            <MaterialCommunityIcons name="motorbike" size={30} color="black" />
+            <Text>{item.key}</Text>
+          </View>
+        )}
+        {item.key == 'Wifi' && item.value == '1' && (
+          <View>
+            <AntDesign name="wifi" size={30} color="black" />
+            <Text style={{marginLeft: 4}}>{item.key}</Text>
+          </View>
+        )}
+      </View>
+    );
+  };
 
   const RoomItem = ({item}) => {
     return (
@@ -130,7 +172,9 @@ const DetailHomestayScreen = ({navigation, route}) => {
   return (
     <GestureHandlerRootView contentContainerStyle={styles.container}>
       <ScrollView showsVerticalScrollIndicator={true}>
-        <ImageBackground source={homestay.image} style={styles.headerImage}>
+        <ImageBackground
+          source={{uri: homestay.image}}
+          style={styles.headerImage}>
           <View style={styles.header}>
             <Icon
               name="arrow-back-ios"
@@ -147,7 +191,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
         </ImageBackground>
         <View>
           <View style={styles.iconContainer}>
-            <Icon name="place" color={colors.white} size={sizes.iconSmall} />
+            <FavoriteButton item={homestay} />
           </View>
           <View style={styles.itemInfor}>
             <Text style={styles.textName}> {homestay.name}</Text>
@@ -186,6 +230,12 @@ const DetailHomestayScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
+          <FlatList
+            data={dataArray}
+            horizontal
+            contentContainerStyle={styles.flatListVertical}
+            renderItem={({item}) => <ShowExtension item={item} />}
+          />
           <View
             style={{
               marginTop: 20,
@@ -306,6 +356,9 @@ const styles = StyleSheet.create({
 
   flatList: {
     alignItems: 'center',
+  },
+  flatListVertical: {
+    paddingVertical: 20,
   },
   roomCard: {
     height: 'auto',

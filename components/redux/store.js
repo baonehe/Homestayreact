@@ -1,10 +1,8 @@
 import {configureStore} from '@reduxjs/toolkit';
-import reducers from '../redux/reducers';
+import rootReducer from './rootReducer';
 
 const store = configureStore({
-  reducer: {
-    timestamp: reducers,
-  },
+  reducer: rootReducer,
 });
 
 export default store;

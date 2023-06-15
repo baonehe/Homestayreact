@@ -13,7 +13,6 @@ import colors from '../assets/consts/colors';
 import DetailsReward from '../components/DetailReward';
 import Information from '../AccountScreenComponent/Information';
 import FastBookingDetailHotel from '../components/FastBookingDetailHotelScreen';
-import FavoritesScreen from '../components/FavoritesScreen';
 
 const Stack = createNativeStackNavigator();
 const myTheme = {
@@ -79,7 +78,6 @@ function StackTabs() {
         component={DetailsReward}
         options={{headerShown: false}}
       />
-      <Stack.Screen name="FavoritesScreen" component={FavoritesScreen} />
     </Stack.Navigator>
   );
 }

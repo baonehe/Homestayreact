@@ -28,6 +28,16 @@ import hotels from '../../assets/data/hotels';
 const Home = ({navigation}) => {
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
+  const [data, setdata] = useState([]);
+
+  function readData() {
+    database()
+      .ref('/data')
+      .once('value')
+      .then(snapshot => {
+        setdata(snapshot.val());
+      });
+  }
 
   const categoryIcons = [
     <Image name="Near you" source={images.nearyou} />,
@@ -45,6 +55,7 @@ const Home = ({navigation}) => {
       const mid = Math.ceil(categoryIcons.length / 2);
       setCategoriesTime(categoryIcons.slice(0, mid));
       setCategoriesType(categoryIcons.slice(mid));
+      readData();
     }, []);
 
     return (
@@ -78,7 +89,6 @@ const Home = ({navigation}) => {
       </View>
     );
   };
-
   const listImages = [
     images.image1,
     images.image2,
@@ -95,18 +105,28 @@ const Home = ({navigation}) => {
             <Text style={styles.itemRatingText}>5.0</Text>
             <Ionicons name="star" size={sizes.iconTiny} color={colors.yellow} />
           </View>
-          <Image style={styles.salesOffCardImage} source={hotel.image} />
+          <Image style={styles.salesOffCardImage} source={{uri: hotel.image}} />
           <View style={styles.itemInfor}>
-            <Text style={styles.itemInforName}>{hotel.name}</Text>
+            <Text
+              style={styles.itemInforName}
+              ellipsizeMode="tail"
+              numberOfLines={1}>
+              {hotel.name}
+            </Text>
             <Text style={styles.itemInforPrice}>{hotel.price}</Text>
           </View>
           <View style={styles.itemLocation}>
-            <Text style={styles.itemLocationText}>{hotel.location}</Text>
             <Ionicons
               name="location-sharp"
               size={sizes.iconTiny}
               color={colors.gray}
             />
+            <Text
+              style={styles.itemLocationText}
+              ellipsizeMode="tail"
+              numberOfLines={3}>
+              {hotel.location}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -305,7 +325,7 @@ const Home = ({navigation}) => {
           <Text>Show all</Text>
         </View>
         <FlatList
-          data={hotels}
+          data={data}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.flatList}

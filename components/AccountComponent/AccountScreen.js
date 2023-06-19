@@ -22,6 +22,9 @@ function Account({navigation, route}) {
   const logout = async () => {
     navigation.navigate('Login');
   };
+  const favoriteSettingHandal = async () => {
+    navigation.navigate('FavoritesScreen');
+  };
   const InforHandle = async () => {
     navigation.navigate('Information');
   };
@@ -89,7 +92,10 @@ function Account({navigation, route}) {
                 size={24}
                 marginHorizontal={10}
               />
-              <Text style={styles.FontCard}> My Favorite</Text>
+              <Text style={styles.FontCard} onPress={favoriteSettingHandal}>
+                {' '}
+                My Favorite
+              </Text>
             </View>
           </View>
           <View>

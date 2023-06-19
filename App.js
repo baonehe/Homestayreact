@@ -1,9 +1,9 @@
 import React from 'react';
 import 'react-native-gesture-handler';
 import StackNavigator from './navigators/StackNavigator';
-import store from './components/redux/store';
+import {store, persistor} from './components/redux/store';
 import {Provider} from 'react-redux';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {PersistGate} from 'redux-persist/integration/react';
 
 // import {
 //   AnimatedTabBarNavigator,
@@ -17,9 +17,9 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 const App = () => {
   return (
     <Provider store={store}>
-      <GestureHandlerRootView style={{flex: 1}}>
+      <PersistGate loading={null} persistor={persistor}>
         <StackNavigator />
-      </GestureHandlerRootView>
+      </PersistGate>
     </Provider>
   );
 };

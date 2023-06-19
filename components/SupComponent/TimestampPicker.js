@@ -13,7 +13,7 @@ import {
   setMarkedDates,
   setCurrentMonth,
   setSelectedTimeframe,
-} from '../redux/reducers';
+} from '../redux/timereducers';
 import colors from '../../assets/consts/colors';
 
 const Top = createMaterialTopTabNavigator();

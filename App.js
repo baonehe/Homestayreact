@@ -4,6 +4,7 @@ import StackNavigator from './navigators/StackNavigator';
 import {store, persistor} from './components/redux/store';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 // import {
 //   AnimatedTabBarNavigator,
@@ -18,7 +19,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <StackNavigator />
+        <GestureHandlerRootView style={{flex: 1}}>
+          <StackNavigator />
+        </GestureHandlerRootView>
       </PersistGate>
     </Provider>
   );

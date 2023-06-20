@@ -12,6 +12,7 @@ const FavoriteButton = ({item}) => {
     favorite => favorite && favorite.id === item.id,
   );
 
+
   const handleFavoritePress = () => {
     if (isFavorite) {
       dispatch(removeFavorite(item));

@@ -71,14 +71,11 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const [price, setPrice] = useState();
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-
-const DetailHomestayScreen = ({navigation, route}) => {
-  const homestay = route.params;
-  console.log(homestay.id);
   const dataArray = Object.entries(homestay.extension).map(([key, value]) => ({
     key,
     value,
   }));
+
   const listImages = [
     images.image1,
     images.image2,
@@ -98,6 +95,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
+
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
@@ -737,6 +735,9 @@ const styles = StyleSheet.create({
 
   flatList: {
     alignItems: 'center',
+  },
+  flatListVertical: {
+    paddingVertical: 20,
   },
   roomCard: {
     height: 'auto',

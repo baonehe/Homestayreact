@@ -20,6 +20,9 @@ function Account({navigation, route}) {
   const NotificationSettingHandal = async () => {
     navigation.navigate('NotificationSetting');
   };
+  const favoriteSettingHandal = async () => {
+    navigation.navigate('FavoritesScreen');
+  };
   const logout = async () => {
     await AsyncStorage.removeItem('isLoggedIn');
     await AsyncStorage.removeItem('userId');

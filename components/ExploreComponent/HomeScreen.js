@@ -30,6 +30,7 @@ const Home = ({navigation}) => {
   const [selectedProvince, setSelectedProvince] = useState(''); // Choose province
   const dispatch = useDispatch();
   const [locations, setLocations] = useState([]);
+
   const [selectedLocation, setSelectedLocation] = useState('');
   const [data, setdata] = useState([]);
 

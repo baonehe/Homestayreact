@@ -16,6 +16,7 @@ import FastBookingDetailHotel from '../components/FastBookingComponent/FastBooki
 import FavoritesScreen from '../components/FavoritesScreen';
 import History from '../components/AccountComponent/History';
 
+
 const Stack = createNativeStackNavigator();
 const myTheme = {
   colors: {

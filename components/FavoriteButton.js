@@ -8,7 +8,9 @@ const FavoriteButton = ({item}) => {
   const dispatch = useDispatch();
   const favorites = useSelector(state => state.favorites) || [];
 
-  const isFavorite = favorites.some(favorite => favorite.id === item.id);
+  const isFavorite = favorites.some(
+    favorite => favorite && favorite.id === item.id,
+  );
 
   const handleFavoritePress = () => {
     if (isFavorite) {
@@ -20,7 +22,6 @@ const FavoriteButton = ({item}) => {
 
   return (
     <View>
-      <Text>{item.title}</Text>
       <TouchableOpacity onPress={handleFavoritePress}>
         <Ionicons
           name={isFavorite ? 'heart' : 'heart-outline'}

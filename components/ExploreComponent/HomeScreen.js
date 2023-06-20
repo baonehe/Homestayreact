@@ -32,7 +32,7 @@ const Home = ({navigation}) => {
 
   function readData() {
     database()
-      .ref('/data')
+      .ref('/homestays')
       .once('value')
       .then(snapshot => {
         setdata(snapshot.val());
@@ -113,7 +113,7 @@ const Home = ({navigation}) => {
               numberOfLines={1}>
               {hotel.name}
             </Text>
-            <Text style={styles.itemInforPrice}>{hotel.price}</Text>
+            <Text style={styles.itemInforPrice}>{hotel.price}$</Text>
           </View>
           <View style={styles.itemLocation}>
             <Ionicons
@@ -506,7 +506,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
     flexDirection: 'row',
   },
-  itemLocationText: {},
+  itemLocationText: {
+    width: '90%',
+  },
   itemInfor: {
     paddingVertical: 5,
     paddingHorizontal: 10,

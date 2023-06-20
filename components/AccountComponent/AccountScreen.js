@@ -17,11 +17,9 @@ function Account({navigation, route}) {
   const [name, setname] = useState('');
   const [phone, setphone] = useState('');
   const [selectLanguage, setselectLanguage] = useState([]);
+
   const NotificationSettingHandal = async () => {
     navigation.navigate('NotificationSetting');
-  };
-  const favoriteSettingHandal = async () => {
-    navigation.navigate('FavoritesScreen');
   };
   const logout = async () => {
     await AsyncStorage.removeItem('isLoggedIn');

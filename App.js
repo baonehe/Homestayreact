@@ -19,9 +19,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <GestureHandlerRootView style={{flex: 1}}>
-          <StackNavigator />
-        </GestureHandlerRootView>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <StackNavigator />
+      </GestureHandlerRootView>
       </PersistGate>
     </Provider>
   );

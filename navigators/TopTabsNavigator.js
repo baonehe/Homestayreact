@@ -52,7 +52,7 @@ const TopTabsNavigator = ({navigation}) => {
 
   // Load data from firebase
   useEffect(() => {
-    const reference = database().ref('/data');
+    const reference = database().ref('/homestays');
     const unsubscribe = reference.on('value', snapshot => {
       if (snapshot && snapshot.val) {
         const data = snapshot.val();

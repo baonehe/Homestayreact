@@ -30,6 +30,7 @@ import FavoriteButton from '../FavoriteButton';
 
 const DetailHomestayScreen = ({navigation, route}) => {
   const homestay = route.params;
+  console.log(homestay.id);
   const dataArray = Object.entries(homestay.extension).map(([key, value]) => ({
     key,
     value,
@@ -304,7 +305,7 @@ const styles = StyleSheet.create({
     height: 60,
     width: 60,
     backgroundColor: colors.primary,
-    top: -30,
+    top: -35,
     right: 20,
     borderRadius: 30,
     justifyContent: 'center',

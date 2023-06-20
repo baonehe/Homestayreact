@@ -1,55 +1,82 @@
 // src/screens/FavoritesScreen.js
 
 import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {useSelector} from 'react-redux';
 
-const FavoritesScreen = () => {
+const FavoritesScreen = ({navigation}) => {
   const favorites = useSelector(state => state.favorites) || [];
 
   return (
     <View>
-      <Text>Favorite Items:</Text>
       {favorites.length > 0 ? (
-        favorites.map(item => (
-          <View style={styles.card}>
-            <Image
-              style={styles.salesOffCardImage}
-              source={{uri: item.image}}
-            />
-            <View style={{flexDirection: 'column'}}>
-              <Text
-                style={{color: 'black', maxWidth: 180}}
-                numberOfLines={3}
-                key={item.id}>
-                {item.name}
-              </Text>
-              <Text>{item.price} $</Text>
+        favorites.map((item, index) => (
+          <TouchableOpacity
+            key={item.id}
+            onPress={() => navigation.navigate('DetailHomestay', item)}>
+            <View
+              style={[
+                styles.card,
+                index !== favorites.length - 1 && styles.divider,
+              ]}>
+              <Image
+                style={styles.salesOffCardImage}
+                source={{uri: item.image}}
+              />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle} numberOfLines={3}>
+                  {item.name}
+                </Text>
+                <Text style={styles.cardPrice}>{item.price} $</Text>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))
       ) : (
-        <Text>No favorite items found.</Text>
+        <Text style={styles.noItemsText}>No favorite items found.</Text>
       )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   card: {
-    height: 200,
-    width: 350,
-    alignSelf: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
     flexDirection: 'row',
+    marginBottom: 10,
     backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
   },
   salesOffCardImage: {
-    height: 150,
-    width: 150,
-    marginRight: 20,
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
+    width: 100,
+    height: 100,
+    marginRight: 10,
+    borderRadius: 10,
+  },
+  cardContent: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  cardTitle: {
+    color: 'black',
+    fontSize: 16,
+    maxWidth: 190,
+    marginBottom: 10,
+  },
+  cardPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
+  },
+  noItemsText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 20,
   },
 });
 export default FavoritesScreen;

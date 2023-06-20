@@ -9,6 +9,7 @@ import IconMT from 'react-native-vector-icons/MaterialIcons';
 import IconOticon from 'react-native-vector-icons/Octicons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 
 function Account({navigation, route}) {
@@ -20,6 +21,8 @@ function Account({navigation, route}) {
     navigation.navigate('NotificationSetting');
   };
   const logout = async () => {
+    await AsyncStorage.removeItem('isLoggedIn');
+    await AsyncStorage.removeItem('userId');
     navigation.navigate('Login');
   };
   const favoriteSettingHandal = async () => {
@@ -27,6 +30,9 @@ function Account({navigation, route}) {
   };
   const InforHandle = async () => {
     navigation.navigate('Information');
+  };
+  const HistoryHandle = async () => {
+    navigation.navigate('HistoryScreen');
   };
   useEffect(() => {
     checkInfo();
@@ -79,7 +85,12 @@ function Account({navigation, route}) {
           <View>
             <Text style={styles.Title}>My Journey</Text>
             <View style={styles.Card}>
-              <Icon name="history" size={24} marginHorizontal={10} />
+              <Icon
+                name="history"
+                size={24}
+                marginHorizontal={10}
+                onPress={HistoryHandle}
+              />
               <Text style={styles.FontCard}> History Booking</Text>
             </View>
             <View style={styles.Card}>

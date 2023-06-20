@@ -1,32 +1,49 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
+import {StyleSheet, Text, View, TextInput, Alert} from 'react-native';
 import {Button} from 'react-native-paper';
-import colors from '../../assets/consts/colors';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconIoni from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import colors from '../../assets/consts/colors';
 
-function SignUp({navigation, route}) {
-  const [regemail, setEmail] = useState('');
-  const [fullname, setFullname] = useState('');
-  const [phonenumber, setphonenumber] = useState('');
-  const [password, setpassword] = useState('');
-  const [checkpassword, setcheckpassword] = useState('');
-  const Regist = async () => {
-    firestore()
-      .collection('Users')
-      .add({
+function SignUp({navigation}) {
+  const [formData, setFormData] = useState({
+    regemail: '',
+    fullname: '',
+    phonenumber: '',
+    password: '',
+    checkpassword: '',
+  });
+
+  const handleInputChange = (name, value) => {
+    setFormData(prevState => ({...prevState, [name]: value}));
+  };
+
+  const handleSignUp = async () => {
+    const {regemail, fullname, phonenumber, password, checkpassword} = formData;
+
+    try {
+      const response = await auth().createUserWithEmailAndPassword(
+        regemail,
+        password,
+      );
+      const {uid} = response.user;
+
+      await firestore().collection('Users').doc(uid).set({
         name: fullname,
         email: regemail,
         phone: phonenumber,
         password: checkpassword,
-      })
-      .then(() => {
-        console.log('User added!');
-        backloginscreen();
       });
+      backloginscreen();
+    } catch (error) {
+      console.log('Sign up error:', error);
+      Alert.alert('Sign Up Failed', error.message);
+    }
   };
-  const backloginscreen = async () => {
+
+  const backloginscreen = () => {
     navigation.navigate('Login');
   };
 
@@ -38,9 +55,9 @@ function SignUp({navigation, route}) {
         <TextInput
           style={styles.input}
           placeholder="Email"
-          value={regemail}
+          value={formData.regemail}
           keyboardType="email-address"
-          onChangeText={text => setEmail(text)}
+          onChangeText={text => handleInputChange('regemail', text)}
         />
       </View>
       <View style={styles.samerow}>
@@ -48,9 +65,9 @@ function SignUp({navigation, route}) {
         <TextInput
           style={styles.input}
           placeholder="Full name"
-          value={fullname}
+          value={formData.fullname}
           keyboardType="default"
-          onChangeText={text => setFullname(text)}
+          onChangeText={text => handleInputChange('fullname', text)}
         />
       </View>
       <View style={styles.samerow}>
@@ -58,34 +75,31 @@ function SignUp({navigation, route}) {
         <TextInput
           style={styles.input}
           placeholder="Your mobile phone"
-          value={phonenumber}
+          value={formData.phonenumber}
           keyboardType="number-pad"
-          onChangeText={text => setphonenumber(text)}
+          onChangeText={text => handleInputChange('phonenumber', text)}
         />
       </View>
-
       <View style={styles.samerow}>
         <Icon name="lock" size={20} marginRight={10} />
         <TextInput
           style={styles.input}
           placeholder="New password"
-          value={password}
+          value={formData.password}
           secureTextEntry
-          onChangeText={text => setpassword(text)}
+          onChangeText={text => handleInputChange('password', text)}
         />
       </View>
-
       <View style={styles.samerow}>
         <IconIoni name="lock-closed-outline" size={20} marginRight={10} />
         <TextInput
           style={styles.input}
           placeholder="Confirm your new password"
-          value={checkpassword}
+          value={formData.checkpassword}
           secureTextEntry
-          onChangeText={text => setcheckpassword(text)}
+          onChangeText={text => handleInputChange('checkpassword', text)}
         />
       </View>
-
       <View style={styles.samerow}>
         <Text style={{marginStart: 12, marginTop: 5}}>
           {' '}
@@ -98,7 +112,6 @@ function SignUp({navigation, route}) {
           Privacy Policy{' '}
         </Text>
       </View>
-
       <Button
         mode="contained"
         style={{
@@ -109,12 +122,12 @@ function SignUp({navigation, route}) {
           backgroundColor: colors.dark,
           marginTop: 20,
         }}
-        onPress={() => Regist()}>
+        onPress={handleSignUp}>
         Sign up
       </Button>
       <View style={styles.samerow}>
         <Text style={{marginStart: 12, marginTop: 5}}> Joined us before? </Text>
-        <Text style={{color: '#00008B'}} onPress={() => backloginscreen()}>
+        <Text style={{color: '#00008B'}} onPress={backloginscreen}>
           {' '}
           Login{' '}
         </Text>
@@ -122,6 +135,7 @@ function SignUp({navigation, route}) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   title: {
     fontSize: 24,
@@ -145,4 +159,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
 export default SignUp;

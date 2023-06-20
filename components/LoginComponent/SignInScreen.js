@@ -67,6 +67,7 @@ export default function Login({navigation}) {
       const userId = user.uid;
       await AsyncStorage.setItem('isLoggedIn', 'true');
       await AsyncStorage.setItem('userId', userId);
+      await AsyncStorage.setItem('EmailAccount', email);
       navigation.navigate('BottomTabsNavigator', {email, userId});
     } catch (error) {
       alert('Login failed');

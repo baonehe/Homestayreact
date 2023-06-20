@@ -35,6 +35,8 @@ function SignUp({navigation}) {
         email: regemail,
         phone: phonenumber,
         password: checkpassword,
+        gender: '',
+        date_of_birth: '',
       });
       backloginscreen();
     } catch (error) {

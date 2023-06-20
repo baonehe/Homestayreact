@@ -1,6 +1,18 @@
 import {StyleSheet, View} from 'react-native';
 import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {Calendar, CalendarList} from 'react-native-calendars';
+import {useSelector, useDispatch} from 'react-redux';
+import {
+  setDuration,
+  setCheckInTime,
+  setCheckOutTime,
+  setCheckInDate,
+  setCheckOutDate,
+  setMarkedDates,
+  setCurrentMonth,
+  setSelectedTimeframe,
+} from '../redux/timereducers';
 import colors from '../../assets/consts/colors';
 import Hourly from './Hourly';
 import Overnight from './Overnight';

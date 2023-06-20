@@ -45,6 +45,7 @@ import {
   setSelectedTimeframe,
   getTimeframeList,
 } from '../redux/timestampReducers';
+import FavoriteButton from '../FavoriteButton';
 import database from '@react-native-firebase/database';
 import colors from '../../assets/consts/colors';
 import sizes from '../../assets/consts/sizes';
@@ -70,7 +71,14 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const [price, setPrice] = useState();
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  // console.log(homestay);
+
+const DetailHomestayScreen = ({navigation, route}) => {
+  const homestay = route.params;
+  console.log(homestay.id);
+  const dataArray = Object.entries(homestay.extension).map(([key, value]) => ({
+    key,
+    value,
+  }));
   const listImages = [
     images.image1,
     images.image2,
@@ -93,6 +101,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
+
 
   const handleBookHomestay = useCallback(
     roomType => {
@@ -164,6 +173,41 @@ const DetailHomestayScreen = ({navigation, route}) => {
         console.log('Error adding booking to the database: ', error);
         // Xử lý lỗi nếu có
       });
+
+  const ShowExtension = ({item}) => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginStart: 40,
+        }}>
+        {item.key == 'Buffet' && item.value == '1' && (
+          <View>
+            <Ionicons name="restaurant" size={30} color="black" />
+            <Text>{item.key}</Text>
+          </View>
+        )}
+        {item.key == 'Car_park' && item.value == '1' && (
+          <View>
+            <MaterialCommunityIcons name="parking" size={30} color="black" />
+            <Text>{item.key}</Text>
+          </View>
+        )}
+        {item.key == 'MotorBike' && item.value == '1' && (
+          <View>
+            <MaterialCommunityIcons name="motorbike" size={30} color="black" />
+            <Text>{item.key}</Text>
+          </View>
+        )}
+        {item.key == 'Wifi' && item.value == '1' && (
+          <View>
+            <AntDesign name="wifi" size={30} color="black" />
+            <Text style={{marginLeft: 4}}>{item.key}</Text>
+          </View>
+        )}
+      </View>
+    );
   };
 
   const RoomItem = ({item}) => {
@@ -483,7 +527,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
           </Modal>
 
           <View style={styles.iconContainer}>
-            <Icon name="place" color={colors.white} size={sizes.iconSmall} />
+            <FavoriteButton item={homestay} />
           </View>
           <View style={styles.itemInfor}>
             <Text style={styles.textName}> {homestay.name}</Text>
@@ -521,6 +565,12 @@ const DetailHomestayScreen = ({navigation, route}) => {
               </Text>
             </View>
           </View>
+          <FlatList
+            data={dataArray}
+            horizontal
+            contentContainerStyle={styles.flatListVertical}
+            renderItem={({item}) => <ShowExtension item={item} />}
+          />
           <View
             style={{
               marginTop: 20,
@@ -637,7 +687,7 @@ const styles = StyleSheet.create({
     height: 60,
     width: 60,
     backgroundColor: colors.primary,
-    top: -30,
+    top: -35,
     right: 20,
     borderRadius: 30,
     justifyContent: 'center',
@@ -907,5 +957,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Lato-Regular',
     textAlign: 'center',
+  },
+  flatListVertical: {
+    paddingVertical: 20,
   },
 });

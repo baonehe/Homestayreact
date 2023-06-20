@@ -9,7 +9,7 @@ const FavoritesScreen = ({navigation}) => {
       {favorites.length > 0 ? (
         favorites.map((item, index) => (
           <TouchableOpacity
-            key={item.id}
+            key={item.homestay_id}
             onPress={() => navigation.navigate('DetailHomestay', item)}>
             <View
               style={[

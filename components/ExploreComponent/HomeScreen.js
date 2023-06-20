@@ -23,25 +23,12 @@ import utils from '../../assets/consts/utils';
 import colors from '../../assets/consts/colors';
 import sizes from '../../assets/consts/sizes';
 import images from '../../assets/images';
-import hotels from '../../assets/data/hotels';
 
 const Home = ({navigation}) => {
   const [provinces, setProvinces] = useState([]); // Provinces list variable
   const [selectedProvince, setSelectedProvince] = useState(''); // Choose province
   const dispatch = useDispatch();
-  const [locations, setLocations] = useState([]);
-
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [data, setdata] = useState([]);
-
-  function readData() {
-    database()
-      .ref('/homestays')
-      .once('value')
-      .then(snapshot => {
-        setdata(snapshot.val());
-      });
-  }
+  const [homestays, setHomestays] = useState([]);
 
   const categoryIcons = [
     <Image name="Near you" source={images.nearyou} />,
@@ -51,6 +38,7 @@ const Home = ({navigation}) => {
     <Image name="Travel" source={images.travel} />,
     <Image name="Luxury" source={images.luxury} />,
   ];
+
   const ListCategories = () => {
     const [categoriesTime, setCategoriesTime] = useState([]);
     const [categoriesType, setCategoriesType] = useState([]);
@@ -59,7 +47,6 @@ const Home = ({navigation}) => {
       const mid = Math.ceil(categoryIcons.length / 2);
       setCategoriesTime(categoryIcons.slice(0, mid));
       setCategoriesType(categoryIcons.slice(mid));
-      readData();
     }, []);
 
     return (
@@ -69,12 +56,13 @@ const Home = ({navigation}) => {
             <TouchableOpacity
               key={index}
               style={styles.iconContainer}
-              onPress={() =>
+              onPress={() => {
+                console.log(1);
                 navigation.navigate('SearchHomestay', {
                   type: icon.props.name,
                   province: selectedProvince,
-                })
-              }>
+                });
+              }}>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
             </TouchableOpacity>
@@ -262,7 +250,16 @@ const Home = ({navigation}) => {
         console.log('Error fetching provinces:', error);
       }
     };
+    const readData = async () => {
+      const snapshot = await database().ref('/homestays').once('value');
+      if (snapshot && snapshot.val) {
+        const data = snapshot.val();
+        const dataList = Object.values(data);
+        setHomestays(dataList);
+      }
+    };
     fetchProvinces();
+    readData();
   }, []);
 
   return (
@@ -356,7 +353,7 @@ const Home = ({navigation}) => {
           <Text>Show all</Text>
         </View>
         <FlatList
-          data={data}
+          data={homestays}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.flatList}

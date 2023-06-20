@@ -18,11 +18,11 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 const App = () => {
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <GestureHandlerRootView style={{flex: 1}}>
-          <StackNavigator />
-        </GestureHandlerRootView>
-      </PersistGate>
+      {/* <PersistGate loading={null} persistor={persistor}> */}
+      <GestureHandlerRootView style={{flex: 1}}>
+        <StackNavigator />
+      </GestureHandlerRootView>
+      {/* </PersistGate> */}
     </Provider>
   );
 };

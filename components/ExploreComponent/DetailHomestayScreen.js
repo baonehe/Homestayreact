@@ -25,15 +25,7 @@ import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {Rating} from 'react-native-ratings';
 import {useSelector, useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  addHours,
-  format,
-  parse,
-  isWithinInterval,
-  isAfter,
-  isBefore,
-  startOfDay,
-} from 'date-fns';
+import {addHours, format, parse, isWithinInterval, isBefore} from 'date-fns';
 import TimestampPicker from '../SupComponent/TimestampPicker';
 import {
   setCheckIn,
@@ -99,7 +91,6 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
-
 
   const handleBookHomestay = useCallback(
     roomType => {
@@ -171,6 +162,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
         console.log('Error adding booking to the database: ', error);
         // Xử lý lỗi nếu có
       });
+  };
 
   const ShowExtension = ({item}) => {
     return (
@@ -316,7 +308,10 @@ const DetailHomestayScreen = ({navigation, route}) => {
     const formattedCheckOut = `${formattedCheckOutTime}, ${checkOutDate}`;
     dispatch(setCheckInTime({checkInTime: itemString, tabName: 'hourly'}));
     dispatch(
-      setCheckOutTime({checkOutTime: formattedCheckOutTime, tabName: 'hourly'}),
+      setCheckOutTime({
+        checkOutTime: formattedCheckOutTime,
+        tabName: 'hourly',
+      }),
     );
     dispatch(
       setSelectedTimeframe({

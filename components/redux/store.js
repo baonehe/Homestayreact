@@ -2,7 +2,6 @@ import {configureStore, combineReducers} from '@reduxjs/toolkit';
 import {persistStore, persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import favoritesSlice from './favoritesSlice';
-import timereducers from './timereducers';
 import timestampReducer from './timestampReducers';
 import locationReducer from './locationReducer';
 

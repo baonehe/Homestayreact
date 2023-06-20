@@ -16,6 +16,7 @@ function Account({navigation, route}) {
   const {email} = route.params;
   const [name, setname] = useState('');
   const [phone, setphone] = useState('');
+  const [accmail, setaccmail] = useState('');
   const [selectLanguage, setselectLanguage] = useState([]);
 
   const NotificationSettingHandal = async () => {
@@ -24,13 +25,15 @@ function Account({navigation, route}) {
   const logout = async () => {
     await AsyncStorage.removeItem('isLoggedIn');
     await AsyncStorage.removeItem('userId');
+    await AsyncStorage.removeItem('EmailAccount');
     navigation.navigate('Login');
   };
   const favoriteSettingHandal = async () => {
     navigation.navigate('FavoritesScreen');
   };
   const InforHandle = async () => {
-    navigation.navigate('Information');
+    const mail = await AsyncStorage.getItem('EmailAccount');
+    navigation.navigate('Information', {mail});
   };
   const HistoryHandle = async () => {
     navigation.navigate('HistoryScreen');
@@ -39,15 +42,17 @@ function Account({navigation, route}) {
     checkInfo();
   });
   const checkInfo = async () => {
+    const mail = await AsyncStorage.getItem('EmailAccount');
     firestore()
       .collection('Users')
-      .where('email', '==', email)
+      .where('email', '==', mail)
       .get()
       .then(querySnapshot => {
         if (querySnapshot.docs.length > 0) {
-          if (querySnapshot.docs[0]._data.email === email) {
+          if (querySnapshot.docs[0]._data.email === mail) {
             setname(querySnapshot.docs[0]._data.name);
             setphone(querySnapshot.docs[0]._data.phone);
+            setaccmail(mail);
           }
         }
       })
@@ -71,7 +76,7 @@ function Account({navigation, route}) {
             <View style={{flexDirection: 'column'}}>
               <Text style={{fontSize: 16, marginLeft: 20}}>{name} </Text>
               <Text style={{fontSize: 16, marginLeft: 20}}>{phone}</Text>
-              <Text style={{fontSize: 16, marginLeft: 20}}>{email}</Text>
+              <Text style={{fontSize: 16, marginLeft: 20}}>{accmail}</Text>
             </View>
             <TouchableOpacity
               style={{marginRight: 20}}

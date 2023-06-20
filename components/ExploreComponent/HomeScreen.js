@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {
-  Button,
   StyleSheet,
   Text,
   View,
@@ -11,12 +10,13 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {SliderBox} from 'react-native-image-slider-box';
 import {ScrollView, TextInput, FlatList} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
 import Geolocation from '@react-native-community/geolocation';
+import {useDispatch} from 'react-redux';
+import {setCurrentLocation} from '../redux/locationReducer';
 import Notification from './NotiScreen';
 import database from '@react-native-firebase/database';
 import utils from '../../assets/consts/utils';
@@ -26,6 +26,9 @@ import images from '../../assets/images';
 import hotels from '../../assets/data/hotels';
 
 const Home = ({navigation}) => {
+  const [provinces, setProvinces] = useState([]); // Provinces list variable
+  const [selectedProvince, setSelectedProvince] = useState(''); // Choose province
+  const dispatch = useDispatch();
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [data, setdata] = useState([]);
@@ -66,7 +69,10 @@ const Home = ({navigation}) => {
               key={index}
               style={styles.iconContainer}
               onPress={() =>
-                navigation.navigate('SearchHomestay', selectedLocation)
+                navigation.navigate('SearchHomestay', {
+                  type: icon.props.name,
+                  province: selectedProvince,
+                })
               }>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
@@ -79,7 +85,10 @@ const Home = ({navigation}) => {
               key={index}
               style={styles.iconContainer}
               onPress={() =>
-                navigation.navigate('SearchHomestay', selectedLocation)
+                navigation.navigate('SearchHomestay', {
+                  type: icon.props.name,
+                  province: selectedProvince,
+                })
               }>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
@@ -133,59 +142,74 @@ const Home = ({navigation}) => {
     );
   };
 
+  // Follow and update current location
   const getMyLocation = useCallback(() => {
-    Geolocation.getCurrentPosition(
-      position => {
-        const {latitude, longitude} = position.coords;
+    const handleLocation = position => {
+      const {latitude, longitude} = position.coords;
+      dispatch(setCurrentLocation(position.coords));
 
-        console.log(latitude, longitude);
-        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${utils.mapKey}`;
+      const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${utils.mapKey}`;
 
-        fetch(geocodingUrl)
-          .then(response => response.json())
-          .then(data => {
-            const results = data.results;
-            if (results.length > 0) {
-              for (const component of results[0].address_components) {
-                if (component.types.includes('administrative_area_level_1')) {
-                  const currentProvince = component.long_name;
-                  console.log('Tỉnh/Thành phố hiện tại:', currentProvince);
+      fetch(geocodingUrl)
+        .then(response => response.json())
+        .then(data => {
+          const results = data.results;
+          if (results.length > 0) {
+            for (const component of results[0].address_components) {
+              if (component.types.includes('administrative_area_level_1')) {
+                const currentProvince = component.long_name;
+                console.log('Tỉnh/Thành phố hiện tại:', currentProvince);
 
-                  database()
-                    .ref('locations')
-                    .orderByChild('name')
-                    .equalTo(currentProvince)
-                    .once('value', snapshot => {
-                      if (snapshot.exists()) {
-                        console.log(
-                          'Tìm thấy trùng khớp trong Firebase Realtime Database',
-                        );
-                        setSelectedLocation(currentProvince);
-                      } else {
-                        console.log(
-                          'Không tìm thấy trùng khớp trong Firebase Realtime Database',
-                        );
-                      }
-                    });
-                  return currentProvince;
-                }
+                database()
+                  .ref('provinces')
+                  .orderByChild('name')
+                  .equalTo(currentProvince)
+                  .once('value', snapshot => {
+                    if (snapshot.exists()) {
+                      console.log(
+                        'Tìm thấy trùng khớp trong Firebase Realtime Database',
+                      );
+                      setSelectedProvince(currentProvince);
+                    } else {
+                      console.log(
+                        'Không tìm thấy trùng khớp trong Firebase Realtime Database',
+                      );
+                    }
+                  });
+                return currentProvince;
               }
             }
-            console.log('Không xác định được tỉnh/ thành phố.');
-            return null;
-          })
-          .catch(error => {
-            console.log('Lỗi khi lấy địa chỉ từ tọa độ:', error);
-            return null;
-          });
-      },
-      error => {
-        console.log('Error getting current location:', error);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  }, []);
+          }
+          console.log('Không xác định được tỉnh/ thành phố.');
+          return null;
+        })
+        .catch(error => {
+          console.log('Lỗi khi lấy địa chỉ từ tọa độ:', error);
+          return null;
+        });
+    };
 
+    const handleError = error => {
+      console.log('Error getting current location:', error);
+    };
+
+    const options = {
+      enableHighAccuracy: true,
+      distanceFilter: 10,
+    };
+
+    const watchId = Geolocation.watchPosition(
+      handleLocation,
+      handleError,
+      options,
+    );
+
+    return () => {
+      Geolocation.clearWatch(watchId);
+    };
+  }, [dispatch]);
+
+  // Function location permission and get current location
   const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -208,30 +232,36 @@ const Home = ({navigation}) => {
     }
   };
 
+  // Call getLocation function
+  useEffect(() => {
+    getMyLocation();
+  }, [getMyLocation]);
+
+  // Request location permission and fetch provinces list
   useEffect(() => {
     requestLocationPermission();
 
-    const fetchLocations = async () => {
+    const fetchProvinces = async () => {
       try {
-        const snapshot = await database().ref('locations').once('value');
+        const snapshot = await database().ref('provinces').once('value');
         const data = snapshot.val();
 
         if (data) {
-          const locationList = Object.values(data).map(
-            location => location.name,
+          const provincesList = Object.values(data).map(
+            province => province.name,
           );
-          const sortedLocations = locationList.sort((a, b) =>
+          const sortedProvince = provincesList.sort((a, b) =>
             a.localeCompare(b),
           );
-          setLocations(sortedLocations);
-          console.log(sortedLocations);
-          // setSelectedLocation(sortedLocations[0] || '');
+          setProvinces(sortedProvince);
+          console.log(sortedProvince);
+          // setSelectedLocation(sortedProvince[0] || '');
         }
       } catch (error) {
-        console.log('Error fetching locations:', error);
+        console.log('Error fetching provinces:', error);
       }
     };
-    fetchLocations();
+    fetchProvinces();
   }, []);
 
   return (
@@ -284,16 +314,16 @@ const Home = ({navigation}) => {
           />
           <Picker
             style={styles.locationPicker}
-            selectedValue={selectedLocation}
+            selectedValue={selectedProvince}
             onValueChange={(itemValue, itemIndex) =>
-              setSelectedLocation(itemValue)
+              setSelectedProvince(itemValue)
             }>
-            {locations.map((location, index) => (
+            {provinces.map((province, index) => (
               <Picker.Item
                 key={index}
                 style={styles.pickerItem}
-                label={location}
-                value={location}
+                label={province}
+                value={province}
               />
             ))}
           </Picker>

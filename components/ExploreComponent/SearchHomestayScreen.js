@@ -18,25 +18,34 @@ import BottomSheet, {
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import {GestureHandlerRootView, FlatList} from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  FlatList,
+  ScrollView,
+} from 'react-native-gesture-handler';
+import {Picker} from '@react-native-picker/picker';
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
+import {useSelector, useDispatch} from 'react-redux';
+import {setCurrentLocation} from '../redux/locationReducer';
 import RangeSlider from '../SupComponent/RangeSlider';
 import database from '@react-native-firebase/database';
 import colors from '../../assets/consts/colors';
 import images from '../../assets/images';
 import sizes from '../../assets/consts/sizes';
+import utils from '../../assets/consts/utils';
 
 const SearchHomestay = ({navigation, route}) => {
   const screenHeight = Dimensions.get('screen').height;
-  const province = route.params;
-  const [filters, setFilters] = useState({});
+  const {type, province} = route.params;
+  const currentLocation = useSelector(state => state.location.currentLocation);
+  const dispatch = useDispatch();
 
   /* Map View */
   const mapRef = useRef(null);
   const markerRefs = useMemo(() => ({}), []);
-  const [location, setLocation] = useState(null);
-  const [homestays, setHomestays] = useState(null);
+  const [location, setLocation] = useState(null); // Current location for map camera
+  const [homestayData, setHomestayData] = useState(null);
   const [homestaySuggestions, setHomestaySuggestions] = useState([]);
   const [selectedMarkerRef, setSelectedMarkerRef] = useState(null);
 
@@ -48,7 +57,7 @@ const SearchHomestay = ({navigation, route}) => {
   const handleSearchInput = text => {
     setSearchText(text);
     if (text !== '') {
-      const filteredHomestays = homestays.filter(homestay =>
+      const filteredHomestays = homestayData.filter(homestay =>
         homestay.name.toLowerCase().includes(text.toLowerCase()),
       );
       setHomestaySuggestions(filteredHomestays);
@@ -66,8 +75,8 @@ const SearchHomestay = ({navigation, route}) => {
         longitudeDelta: 0.00421,
       });
     }
-    setSelectedMarkerRef(markerRefs[result.id]);
-    markerRefs[result.id].showCallout();
+    setSelectedMarkerRef(markerRefs[result.homestay_id]);
+    markerRefs[result.homestay_id].showCallout();
   };
 
   const handleSelectCallout = result => {
@@ -100,6 +109,7 @@ const SearchHomestay = ({navigation, route}) => {
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
+        dispatch(setCurrentLocation(position.coords));
         setLocation({
           latitude,
           longitude,
@@ -112,7 +122,37 @@ const SearchHomestay = ({navigation, route}) => {
       },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-  }, []);
+  }, [dispatch]);
+
+  const toRad = value => {
+    return value * (Math.PI / 180);
+  };
+
+  const calculateDistance = (latitude, longitude) => {
+    if (currentLocation) {
+      const lat1 = currentLocation.latitude;
+      const lon1 = currentLocation.longitude;
+
+      const lat2 = latitude;
+      const lon2 = longitude;
+
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) *
+          Math.cos(toRad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+
+      return distance.toFixed(2) + ' km';
+    }
+
+    return '';
+  };
 
   /* Bottom sheet */
   // hooks
@@ -120,7 +160,7 @@ const SearchHomestay = ({navigation, route}) => {
   const [sheetRefOpen, setSheetRefOpen] = useState(false);
 
   // variables
-  const snapRefPoints = useMemo(() => ['15%', '50%', '93%'], []);
+  const snapRefPoints = useMemo(() => ['3%', '50%', '93%'], []);
 
   // callbacks
   const handleRefChange = useCallback(index => {
@@ -135,7 +175,7 @@ const SearchHomestay = ({navigation, route}) => {
   }, []);
 
   // render
-  const renderItem = useCallback(
+  const renderHSItem = useCallback(
     ({item}) => (
       <TouchableOpacity
         onPress={() => navigation.navigate('DetailHomestay', item)}>
@@ -152,7 +192,7 @@ const SearchHomestay = ({navigation, route}) => {
             </Text>
             <Text style={styles.itemSlogan}>{item.slogan}</Text>
             <View style={styles.itemDistanceContainer}>
-              <Text style={styles.itemDistance}>2.5km</Text>
+              <Text style={styles.itemDistance}>{item.distance}</Text>
               <Ionicons
                 name="location-sharp"
                 size={sizes.iconTiny}
@@ -161,7 +201,7 @@ const SearchHomestay = ({navigation, route}) => {
             </View>
             <View style={styles.itemRatingContainer}>
               <Text style={styles.itemRating}>{item.rating}</Text>
-              <Text style={styles.itemRatingVote}>{item.ratingvote}</Text>
+              <Text style={styles.itemRatingVote}>({item.ratingvote})</Text>
               <Ionicons
                 name="star"
                 size={sizes.iconTiny}
@@ -178,8 +218,14 @@ const SearchHomestay = ({navigation, route}) => {
   /* Filtersheet */
   // hooks
   const sheetFil = useRef(null);
-  const [minValue, setMinValue] = useState(20000);
-  const [maxValue, setMaxValue] = useState(10000000);
+  const [filters, setFilters] = useState([]);
+  const [provinces, setProvinces] = useState([]); // Provinces list variable
+  const [selectedProvince, setSelectedProvince] = useState(province); // Choose province
+  const [types, setTypes] = useState([]);
+  const [selectedType, setSelectedType] = useState([]);
+
+  const [minValue, setMinValue] = useState(utils.MIN_VALUE);
+  const [maxValue, setMaxValue] = useState(utils.MAX_VALUE);
 
   // variables
   const snapFilPoints = useMemo(() => ['93%'], []);
@@ -188,20 +234,122 @@ const SearchHomestay = ({navigation, route}) => {
     sheetFil.current?.snapToIndex(0);
   }, []);
 
+  const handleReset = useCallback(() => {
+    setMinValue(utils.MIN_VALUE);
+    setMaxValue(utils.MAX_VALUE);
+
+    setFilters(prevFilters => {
+      return prevFilters.map(filter => {
+        return {
+          ...filter,
+          checked: false,
+        };
+      });
+    });
+
+    setTypes(prevTypes => {
+      return prevTypes.map(item => {
+        return {
+          ...item,
+          checked: false,
+        };
+      });
+    });
+    setSelectedProvince(province);
+  }, [province]);
+
   const handleFilterChange = useCallback((filterName, isChecked) => {
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      [filterName]: isChecked,
-    }));
-    console.log(filters);
+    setFilters(prevFilters => {
+      return prevFilters.map(filter => {
+        if (filter.value === filterName) {
+          return {
+            ...filter,
+            checked: !isChecked,
+          };
+        }
+        return filter;
+      });
+    });
   }, []);
 
-  const Fter = ({item}) => {
-    const handleCheckboxChange = isChecked => {
-      handleFilterChange(item, isChecked);
-      console.log(filters[item]);
-    };
-    return (
+  const handleTypeChange = useCallback((typeName, isChecked) => {
+    setTypes(prevTypes => {
+      return prevTypes.map(item => {
+        if (item.value === typeName) {
+          return {
+            ...item,
+            checked: !isChecked,
+          };
+        }
+        return item;
+      });
+    });
+  }, []);
+
+  const handleApplyFilters = useCallback(() => {
+    console.log(minValue, maxValue);
+    console.log(filters);
+    console.log(types);
+
+    const reference = database().ref('homestays');
+    const unsubscribe = reference.on('value', snapshot => {
+      if (snapshot && snapshot.val()) {
+        const data = snapshot.val();
+
+        // Filter homestay depend on province
+        let filteredHomestays = Object.values(data).filter(
+          homestay => homestay.province === selectedProvince,
+        );
+
+        // Calculate the distance of item
+        filteredHomestays.forEach(homestay => {
+          homestay.distance = calculateDistance(
+            homestay.coordinates.latitude,
+            homestay.coordinates.longitude,
+          );
+        });
+
+        // Apply price filters
+        filteredHomestays = filteredHomestays.filter(homestay => {
+          const price = parseInt(homestay.price, 10);
+          return price >= minValue && price <= maxValue;
+        });
+        console.log('price:', filteredHomestays);
+
+        // Apply extension filters
+        filteredHomestays = filteredHomestays.filter(homestay => {
+          const extension = homestay.extension;
+          const filterValues = filters
+            .filter(filter => filter.checked && extension[filter.value] === 1)
+            .map(filter => filter.value);
+          return (
+            filterValues.length ===
+            filters.filter(filter => filter.checked).length
+          );
+        });
+        console.log('Ex:', filteredHomestays);
+
+        //Apply type filters
+        filteredHomestays = filteredHomestays.filter(homestay => {
+          const item = homestay.type;
+          const typeValues = types
+            .filter(type => type.checked && item.includes(type.value))
+            .map(type => type.value);
+          return (
+            typeValues.length === types.filter(type => type.checked).length
+          );
+        });
+        console.log('type:', filteredHomestays);
+
+        setHomestayData(filteredHomestays);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [minValue, maxValue, filters, types, selectedProvince]);
+
+  const renderFTItem = useCallback(
+    ({item}) => (
       <View
         style={{
           width: '100%',
@@ -217,56 +365,196 @@ const SearchHomestay = ({navigation, route}) => {
             fontFamily: 'Inter-Regular',
             color: colors.black,
           }}>
-          {item}
+          {item.value}
         </Text>
         <BouncyCheckbox
           size={20}
           fillColor={colors.primary}
           unfillColor={colors.white}
-          // onPress={() => handleCheckboxChange(!filters[item])}
-          // isChecked={filters[item]}
+          disableBuiltInState
+          onPress={() => handleFilterChange(item.value, item.checked)}
+          isChecked={item.checked}
         />
       </View>
-    );
-  };
+    ),
+    [handleFilterChange],
+  );
 
+  const renderTypeItem = useCallback(
+    ({item}) => (
+      <View
+        style={{
+          width: '100%',
+          paddingHorizontal: 8,
+          marginVertical: 3,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: 'Inter-Regular',
+            color: colors.black,
+          }}>
+          {item.value}
+        </Text>
+        <BouncyCheckbox
+          size={20}
+          fillColor={colors.primary}
+          unfillColor={colors.white}
+          disableBuiltInState
+          onPress={() => handleTypeChange(item.value, item.checked)}
+          isChecked={item.checked}
+        />
+      </View>
+    ),
+    [handleTypeChange],
+  );
+
+  const handleSelectAll = useCallback(() => {}, []);
+  // Request permission and fetch data depend on type, location
   useEffect(() => {
     requestLocationPermission();
 
-    const reference = database().ref('/data');
-    const unsubscribe = reference.on('value', snapshot => {
+    const fetchData = async () => {
+      const snapshot = await database().ref('homestays').once('value');
       if (snapshot && snapshot.val) {
         const data = snapshot.val();
-        const filteredHomestays = Object.values(data).filter(
-          homestay => homestay.province === province,
-        );
-        setHomestays(filteredHomestays);
-      }
-    });
+        const homestays = Object.values(data);
 
-    return () => unsubscribe();
+        let filteredHomestays = homestays;
+
+        // Calculate the distance of item
+        filteredHomestays.forEach(homestay => {
+          homestay.distance = calculateDistance(
+            homestay.coordinates.latitude,
+            homestay.coordinates.longitude,
+          );
+        });
+
+        if (type === 'Near you') {
+          // Filter items within a maximum distance of 10km
+          filteredHomestays = filteredHomestays.filter(
+            item => parseFloat(item.distance) <= 10,
+          );
+
+          // Sort by distance from smallest to largest
+          filteredHomestays.sort((a, b) => {
+            const distanceA = parseFloat(a.distance);
+            const distanceB = parseFloat(b.distance);
+            if (distanceA < distanceB) {
+              return -1;
+            } else if (distanceA > distanceB) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+        } else {
+          filteredHomestays = filteredHomestays.filter(
+            homestay =>
+              homestay.province === selectedProvince &&
+              homestay.type.includes(type),
+          );
+        }
+
+        if (isMounted) {
+          setHomestayData(filteredHomestays);
+        }
+      }
+    };
+    const fetchProvinces = async () => {
+      try {
+        const snapshot = await database().ref('provinces').once('value');
+        const data = snapshot.val();
+
+        if (data) {
+          const provincesList = Object.values(data).map(item => item.name);
+          const sortedProvince = provincesList.sort((a, b) =>
+            a.localeCompare(b),
+          );
+          setProvinces(sortedProvince);
+          console.log(sortedProvince);
+          // setSelectedLocation(sortedProvince[0] || '');
+        }
+      } catch (error) {
+        console.log('Error fetching provinces:', error);
+      }
+    };
+
+    let isMounted = true;
+
+    fetchData();
+    fetchProvinces();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedProvince, type]);
+
+  // Fetch type list
+  useEffect(() => {
+    const fetchTypes = async () => {
+      const reference = database().ref('types');
+      const snapshot = await reference.once('value');
+      if (snapshot && snapshot.val) {
+        const data = snapshot.val();
+        const typesList = Object.values(data).map(item => ({
+          value: item,
+          checked: false,
+        }));
+        setTypes(typesList);
+      }
+    };
+    fetchTypes();
+    return () => {};
   }, []);
 
+  // Fetch extension list
   useEffect(() => {
-    const reference = database().ref('/extension');
-    const unsubscribe = reference.on('value', snapshot => {
+    const fetchExtension = async () => {
+      const reference = database().ref('extension');
+      const snapshot = await reference.once('value');
       if (snapshot && snapshot.val) {
         const data = snapshot.val();
-        setFilters(data);
+        const filtersData = Object.values(data).map(item => ({
+          value: item,
+          checked: false,
+        }));
+        setFilters(filtersData);
       }
-    });
-    return () => unsubscribe();
-  });
+    };
+    fetchExtension();
+    return () => {};
+  }, []);
 
+  // Update data when current location change
+  useEffect(() => {
+    if (homestayData && currentLocation) {
+      const updatedData = homestayData.map(homestay => {
+        const updatedHomestay = {...homestay};
+        updatedHomestay.distance = calculateDistance(
+          homestay.coordinates.latitude,
+          homestay.coordinates.longitude,
+        );
+        return updatedHomestay;
+      });
+      setHomestayData(updatedData);
+    }
+  }, [currentLocation]);
+
+  // Move camera to current location
   useEffect(() => {
     if (location) {
       mapRef.current?.animateToRegion(location);
     }
+    console.log(location);
   }, [location]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <GestureHandlerRootView>
+      <GestureHandlerRootView style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <MaterialIcons
@@ -307,6 +595,7 @@ const SearchHomestay = ({navigation, route}) => {
             </TouchableOpacity>
           </View>
         </View>
+
         {homestaySuggestions.length > 0 && searchText !== '' && (
           <View
             style={{
@@ -319,7 +608,7 @@ const SearchHomestay = ({navigation, route}) => {
             {homestaySuggestions.slice(0, 5).map(suggestedHomestay => {
               return (
                 <TouchableOpacity
-                  key={suggestedHomestay.id}
+                  key={suggestedHomestay.homestay_id}
                   style={{
                     backgroundColor: 'white',
                     borderColor: colors.black,
@@ -337,6 +626,7 @@ const SearchHomestay = ({navigation, route}) => {
             })}
           </View>
         )}
+
         <MapView
           provider={PROVIDER_GOOGLE}
           onMapReady={getMyLocation}
@@ -344,11 +634,11 @@ const SearchHomestay = ({navigation, route}) => {
           style={[styles.map, {height: screenHeight}]}
           showsMyLocationButton={true}
           showsUserLocation={true}>
-          {homestays &&
-            homestays.map(home => (
+          {homestayData &&
+            homestayData.map(home => (
               <Marker
-                key={home.id}
-                ref={marker => (markerRefs[home.id] = marker)}
+                key={home.homestay_id}
+                ref={marker => (markerRefs[home.homestay_id] = marker)}
                 icon={images.marker}
                 coordinate={{
                   latitude: home.coordinates.latitude,
@@ -396,8 +686,8 @@ const SearchHomestay = ({navigation, route}) => {
           snapPoints={snapRefPoints}
           onChange={handleRefChange}>
           <BottomSheetFlatList
-            data={homestays}
-            renderItem={renderItem}
+            data={homestayData}
+            renderItem={renderHSItem}
             contentContainerStyle={styles.flatList}
           />
         </BottomSheet>
@@ -417,30 +707,28 @@ const SearchHomestay = ({navigation, route}) => {
           index={-1}
           snapPoints={snapFilPoints}
           enablePanDownToClose={true}>
-          <BottomSheetScrollView
-            contentContainerStyle={styles.contentContainer}>
-            <View style={styles.filterHeader}>
-              <View style={{flex: 1}} />
-              <Text style={styles.filterLabel}>Filter</Text>
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'flex-end',
-                }}>
-                <TouchableOpacity>
-                  <Text style={styles.filterReset}>Reset</Text>
-                </TouchableOpacity>
-              </View>
+          <View style={styles.filterHeader}>
+            <View style={{flex: 1}} />
+            <Text style={styles.filterLabel}>Filter</Text>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'flex-end',
+              }}>
+              <TouchableOpacity onPress={() => handleReset()}>
+                <Text style={styles.filterReset}>Reset</Text>
+              </TouchableOpacity>
             </View>
-
+          </View>
+          <BottomSheetScrollView>
             <View style={styles.priceContainer}>
               <Text style={styles.categoryLabel}>Price range</Text>
               <View style={{marginVertical: 20}}>
                 <RangeSlider
                   sliderWidth={320}
-                  min={20000}
-                  max={10000000}
-                  step={10000}
+                  min={utils.MIN_VALUE}
+                  max={utils.MAX_VALUE}
+                  step={10}
                   onValueChange={range => {
                     setMinValue(range.min);
                     setMaxValue(range.max);
@@ -465,22 +753,76 @@ const SearchHomestay = ({navigation, route}) => {
               </View>
             </View>
 
-            <View style={styles.facilitiesContainer}>
-              <Text style={styles.categoryLabel}>Facilites</Text>
+            <View style={styles.provinceContainer}>
+              <Text style={styles.categoryLabel}>Province</Text>
+              <Picker
+                style={styles.locationPicker}
+                selectedValue={selectedProvince}
+                onValueChange={(itemValue, itemIndex) =>
+                  setSelectedProvince(itemValue)
+                }>
+                {provinces.map((item, index) => (
+                  <Picker.Item
+                    key={index}
+                    style={styles.pickerItem}
+                    label={item}
+                    value={item}
+                  />
+                ))}
+              </Picker>
+            </View>
+
+            <View style={styles.flatListContainer}>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text style={styles.categoryLabel}>Type</Text>
+                <View style={{flexDirection: 'row', marginRight: 23}}>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontFamily: 'Inter-Regular',
+                      color: colors.black,
+                      marginHorizontal: 8,
+                    }}>
+                    All
+                  </Text>
+                  <BouncyCheckbox
+                    disableText
+                    size={22}
+                    fillColor={colors.primary}
+                    unfillColor="#FFFFFF"
+                    iconStyle={{borderColor: colors.primary, borderRadius: 0}}
+                    innerIconStyle={{borderWidth: 1.8, borderRadius: 0}}
+                    onPress={() => handleSelectAll()}
+                  />
+                </View>
+              </View>
+
               <FlatList
-                data={filters}
-                renderItem={({item}) => <Fter item={item} />}
-                keyExtractor={(item, index) => index.toString()}
+                data={types}
+                renderItem={renderTypeItem}
+                keyExtractor={(item, index) => item.value.toString()}
                 contentContainerStyle={styles.flatList}
               />
             </View>
 
-            <View>
-              <TouchableOpacity style={styles.applyBtn}>
-                <Text style={styles.applyText}>Apply</Text>
-              </TouchableOpacity>
+            <View style={styles.flatListContainer}>
+              <Text style={styles.categoryLabel}>Facilites</Text>
+              <FlatList
+                data={filters}
+                renderItem={renderFTItem}
+                keyExtractor={(item, index) => item.value.toString()}
+                contentContainerStyle={styles.flatList}
+              />
             </View>
           </BottomSheetScrollView>
+          <View style={styles.applyContainer}>
+            <TouchableOpacity
+              style={styles.applyBtn}
+              onPress={() => handleApplyFilters()}>
+              <Text style={styles.applyText}>Apply</Text>
+            </TouchableOpacity>
+          </View>
         </BottomSheet>
       </GestureHandlerRootView>
     </SafeAreaView>
@@ -543,7 +885,6 @@ const styles = StyleSheet.create({
 
   flatList: {
     marginTop: 10,
-    paddingBottom: 120,
   },
   itemCard: {
     height: 120,
@@ -617,7 +958,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 115,
+    bottom: 10,
     right: '37.5%',
   },
   mapBtn: {
@@ -718,12 +1059,32 @@ const styles = StyleSheet.create({
   },
   priceValue: {
     fontSize: 18,
-    fontFamiLy: 'Lato-Bold',
+    fontFamily: 'Lato-Bold',
     fontWeight: '600',
     color: colors.black,
   },
 
-  facilitiesContainer: {
+  provinceContainer: {
+    flexDirection: 'column',
+    width: '100%',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 0.5,
+    borderColor: colors.gray,
+  },
+  locationPicker: {
+    verticalAlign: 'center',
+    marginLeft: -15,
+    width: 300,
+  },
+  pickerItem: {
+    fontWeight: 'bold',
+    color: colors.dark,
+    fontFamily: 'Lato-Black',
+    fontSize: sizes.fontLarge,
+  },
+
+  flatListContainer: {
     flexDirection: 'column',
     width: '100%',
     paddingVertical: 10,
@@ -732,6 +1093,12 @@ const styles = StyleSheet.create({
     borderColor: colors.gray,
   },
 
+  applyContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
   applyText: {
     color: colors.white,
     fontSize: 15,
@@ -739,7 +1106,7 @@ const styles = StyleSheet.create({
   },
   applyBtn: {
     height: 40,
-    width: 200,
+    width: 180,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.dark,

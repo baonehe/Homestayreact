@@ -1,9 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit';
-import reducers from '../redux/reducers';
+import timestampReducer from './timestampReducers';
+import locationReducer from './locationReducer';
 
 const store = configureStore({
   reducer: {
-    timestamp: reducers,
+    timestamp: timestampReducer,
+    location: locationReducer,
   },
 });
 

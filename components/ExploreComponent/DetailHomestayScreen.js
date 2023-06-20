@@ -4,8 +4,10 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Alert,
+  Modal,
 } from 'react-native';
-import React, {useState, useRef, useMemo, useCallback, useEffect} from 'react';
+import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
 import FastImage from 'react-native-fast-image';
 import {SliderBox} from 'react-native-image-slider-box';
 import {
@@ -15,21 +17,60 @@ import {
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-// import RNDateTimePicker, {
-//   DateTimePickerAndroid,
-// } from '@react-native-community/datetimepicker';
+import {Rating} from 'react-native-ratings';
+import {useSelector, useDispatch} from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  addHours,
+  format,
+  parse,
+  isWithinInterval,
+  isAfter,
+  isBefore,
+  startOfDay,
+} from 'date-fns';
 import TimestampPicker from '../SupComponent/TimestampPicker';
+import {
+  setCheckIn,
+  setCheckOut,
+  setCheckInTab,
+  setCheckOutTab,
+  setCheckInTime,
+  setCheckOutTime,
+  setSelectedTimeframe,
+  getTimeframeList,
+} from '../redux/timestampReducers';
+import FavoriteButton from '../FavoriteButton';
+import database from '@react-native-firebase/database';
 import colors from '../../assets/consts/colors';
 import sizes from '../../assets/consts/sizes';
 import images from '../../assets/images';
-import FavoriteButton from '../FavoriteButton';
+import utils from '../../assets/consts/utils';
 
 const DetailHomestayScreen = ({navigation, route}) => {
   const homestay = route.params;
+  const timeType = useSelector(state => state.timestamp.timeType);
+  const selector = useSelector(state => state.timestamp);
+  const dispatch = useDispatch();
+  const hourlyDuration = useSelector(state => state.timestamp.hourly.duration);
+  const ov9Duration = useSelector(state => state.timestamp.overnight.duration);
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [rooms, setRooms] = useState();
+  const checkIn = useSelector(state => state.timestamp.checkIn);
+  const checkOut = useSelector(state => state.timestamp.checkOut);
+
+  const [chooseRoom, setChooseRoom] = useState();
+  const [check, setCheck] = useState(false);
+  const [text, setText] = useState('Confirm Booking');
+  const [roomNumber, setRoomNumber] = useState();
+  const [price, setPrice] = useState();
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
   const dataArray = Object.entries(homestay.extension).map(([key, value]) => ({
     key,
     value,
@@ -41,6 +82,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
     images.image3,
     images.image4,
   ];
+  const [notiModal, setNotiModal] = useState(false);
 
   // hooks
   const bottomSheetModalRef = useRef(null);
@@ -57,6 +99,78 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index);
   }, []);
+
+
+  const handleBookHomestay = useCallback(
+    roomType => {
+      if (isDataLoaded) {
+        console.log('room', rooms);
+
+        const roomList = rooms[roomType.roomtype_id];
+
+        if (roomList && roomList.length > 0) {
+          // Phòng thuộc roomtype_id tồn tại
+          const firstRoom = roomList[0];
+          setCheck(true);
+          setText('Confirm Booking');
+          setRoomNumber(firstRoom.room_number);
+          if (timeType === 'Hourly') {
+            setPrice(roomType.price_per_hour * hourlyDuration);
+          } else if (timeType === 'Overnight') {
+            setPrice(roomType.price_per_night);
+          } else {
+          }
+
+          setChooseRoom(firstRoom);
+          setNotiModal(true);
+        } else {
+          // Không có phòng thuộc roomtype_id
+          setCheck(false);
+          setText('There are currently no available rooms of this type');
+          setNotiModal(true);
+        }
+      } else {
+        // Hiển thị thông báo hoặc xử lý khác khi dữ liệu chưa sẵn sàng
+        console.log('Data is loading...');
+      }
+    },
+    [hourlyDuration, isDataLoaded, rooms, timeType],
+  );
+
+  function generateBookingId() {
+    const length = 10; // Độ dài của bookingId
+    let bookingId = '';
+
+    for (let i = 0; i < length; i++) {
+      const randomDigit = Math.floor(Math.random() * 10); // Sinh ra một số ngẫu nhiên từ 0 đến 9
+      bookingId += randomDigit.toString(); // Chuyển đổi số thành chuỗi và thêm vào bookingId
+    }
+
+    return bookingId;
+  }
+
+  const bookHomestay = async () => {
+    const newBooking = {
+      booking_id: generateBookingId(),
+      room_id: chooseRoom.room_id,
+      user_id: await AsyncStorage.getItem('userId'),
+      check_in: selector.checkIn,
+      check_out: selector.checkOut,
+      price: price,
+      status: 'booked',
+    };
+    setNotiModal(!notiModal);
+    database()
+      .ref('booking')
+      .push(newBooking)
+      .then(() => {
+        console.log('Booking added to the database');
+        fetchRooms();
+      })
+      .catch(error => {
+        console.log('Error adding booking to the database: ', error);
+        // Xử lý lỗi nếu có
+      });
 
   const ShowExtension = ({item}) => {
     return (
@@ -111,12 +225,29 @@ const DetailHomestayScreen = ({navigation, route}) => {
           imageLoadingColor={colors.primary}
           ImageComponentStyle={styles.boxImageSlider}
         />
+
         <View style={styles.inforRoom}>
-          <Text style={styles.roomTypeText}>{item.roomtype}</Text>
+          <Text style={styles.roomTypeText}>{item.room_type}</Text>
           <View style={styles.detailRoom}>
             <View style={styles.priceContainer}>
-              <Text style={styles.timeTypeText}>{item.timetype}</Text>
-              <Text style={styles.priceText}>{item.price}$</Text>
+              <Text style={styles.timeTypeText}>
+                {item.timetype.map((type, index) =>
+                  type === timeType ? <Text key={index}>{type}</Text> : null,
+                )}
+              </Text>
+              <Text style={styles.priceText}>
+                {' '}
+                {item.timetype.includes(timeType) ? (
+                  <Text>
+                    {timeType === 'Hourly'
+                      ? item.price_per_hour * hourlyDuration
+                      : timeType === 'Overnight'
+                      ? item.price_per_night
+                      : item.price_per_night}
+                    $
+                  </Text>
+                ) : null}
+              </Text>
             </View>
             <View style={styles.conditionContainer}>
               <View style={styles.conditionItem}>
@@ -160,13 +291,167 @@ const DetailHomestayScreen = ({navigation, route}) => {
               />
               <Text style={styles.policyText}>Chính sách hoàn trả</Text>
             </View>
-            <TouchableOpacity style={styles.bookBtn}>
+            <TouchableOpacity
+              style={styles.bookBtn}
+              onPress={() => handleBookHomestay(item)}>
               <Text style={styles.textBtn}>BOOK</Text>
             </TouchableOpacity>
           </View>
         </View>
       </TouchableOpacity>
     );
+  };
+
+  // Update datetime
+  useEffect(() => {
+    const timeframeList = getTimeframeList(selector.hourly.checkInDate);
+    const itemString = timeframeList.find(item => !item.disabled).timeString;
+    const checkInTime = parse(itemString, 'HH:mm', new Date());
+    const newCheckOutTime = addHours(checkInTime, selector.hourly.duration);
+    const formattedCheckOutTime = format(newCheckOutTime, 'HH:mm');
+
+    const checkInDate = selector.hourly.checkInDate;
+    const checkOutDate = selector.hourly.checkOutDate;
+    const formattedCheckIn = `${itemString}, ${checkInDate}`;
+    const formattedCheckOut = `${formattedCheckOutTime}, ${checkOutDate}`;
+    dispatch(setCheckInTime({checkInTime: itemString, tabName: 'hourly'}));
+    dispatch(
+      setCheckOutTime({checkOutTime: formattedCheckOutTime, tabName: 'hourly'}),
+    );
+    dispatch(
+      setSelectedTimeframe({
+        selectedTimeFrame: itemString,
+        tabName: 'hourly',
+      }),
+    );
+    dispatch(setCheckInTab({checkIn: formattedCheckIn, tabName: 'hourly'}));
+    dispatch(setCheckOutTab({checkOut: formattedCheckOut, tabName: 'hourly'}));
+    dispatch(setCheckIn(formattedCheckIn));
+    dispatch(setCheckOut(formattedCheckOut));
+  }, []);
+
+  console.log('Time:' + selector.checkIn, selector.checkOut);
+
+  // Fetch Room Types
+  useEffect(() => {
+    const fetchRoomTypes = async () => {
+      const snapshot = await database().ref('roomtypes').once('value');
+      if (snapshot && snapshot.val) {
+        const data = snapshot.val();
+        const roomTypesData = Object.values(data);
+
+        // Lọc các kiểu phòng theo homestay_id
+        const filteredRoomTypes = roomTypesData.filter(
+          roomType => roomType.homestay_id === homestay.homestay_id,
+        );
+        console.log(filteredRoomTypes, homestay.homestay_id);
+        // Lưu trữ danh sách kiểu phòng đã lọc vào state
+        setRoomTypes(filteredRoomTypes);
+      }
+    };
+    fetchRoomTypes();
+  }, [homestay.homestay_id]);
+
+  const fetchRooms = useCallback(async () => {
+    const snapshot = await database().ref('rooms').once('value');
+    if (snapshot && snapshot.val) {
+      const data = snapshot.val();
+      const roomsData = Object.values(data);
+
+      // Tạo một danh sách tất cả các phòng có sẵn
+      const availableRooms = [];
+      for (const room of roomsData) {
+        const isAvailable = await isRoomAvailable(
+          room,
+          selector.checkIn,
+          selector.checkOut,
+        );
+        if (isAvailable) {
+          availableRooms.push(room);
+        }
+      }
+
+      // Tạo một đối tượng để phân loại các phòng theo roomtype_id
+      const classifiedRooms = {};
+      availableRooms.forEach(room => {
+        if (classifiedRooms.hasOwnProperty(room.roomtype_id)) {
+          classifiedRooms[room.roomtype_id].push(room);
+        } else {
+          classifiedRooms[room.roomtype_id] = [room];
+        }
+      });
+
+      // Lưu trữ các phòng đã phân loại và kiểm tra sẵn sàng vào state
+      setRooms(classifiedRooms);
+      setIsDataLoaded(true);
+    }
+  }, [selector.checkIn, selector.checkOut]);
+
+  useEffect(() => {
+    fetchRooms();
+  }, [fetchRooms]);
+
+  const isRoomAvailable = async (room, checkin, checkout) => {
+    const snapshot = await database().ref('booking').once('value');
+    if (snapshot && snapshot.val) {
+      const data = snapshot.val();
+      const bookings = Object.values(data);
+
+      // Kiểm tra xem phòng có trong bookings không
+      const roomBookings = bookings.filter(
+        booking => booking.room_id === room.room_id,
+      );
+      if (roomBookings.length === 0) {
+        return true; // Phòng không có đặt phòng
+      }
+
+      const checkinDate = parse(checkin, 'HH:mm, dd/MM/yyyy', new Date());
+      const checkoutDate = parse(checkout, 'HH:mm, dd/MM/yyyy', new Date());
+
+      for (const booking of roomBookings) {
+        const bookingCheckinDate = parse(
+          booking.check_in,
+          'HH:mm, dd/MM/yyyy',
+          new Date(),
+        );
+        const bookingCheckoutDate = parse(
+          booking.check_out,
+          'HH:mm, dd/MM/yyyy',
+          new Date(),
+        );
+
+        // Kiểm tra nếu ngày check-out trong quá khứ
+        if (isBefore(bookingCheckoutDate, new Date())) {
+          continue; // Bỏ qua phòng đã có đặt trong quá khứ
+        }
+
+        const isConflict =
+          isWithinInterval(checkinDate, {
+            start: bookingCheckinDate,
+            end: bookingCheckoutDate,
+          }) ||
+          isWithinInterval(checkoutDate, {
+            start: bookingCheckinDate,
+            end: bookingCheckoutDate,
+          }) ||
+          isWithinInterval(bookingCheckinDate, {
+            start: checkinDate,
+            end: checkoutDate,
+          }) ||
+          isWithinInterval(bookingCheckoutDate, {
+            start: checkinDate,
+            end: checkoutDate,
+          });
+
+        if (isConflict) {
+          return false; // Phòng đã có người đặt trong khoảng thời gian này
+        }
+      }
+
+      return true; // Phòng không bị xung đột với khoảng thời gian này
+    }
+
+    return true; // Nếu không có dữ liệu đặt phòng
   };
 
   return (
@@ -190,6 +475,55 @@ const DetailHomestayScreen = ({navigation, route}) => {
           </View>
         </ImageBackground>
         <View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={notiModal}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              setNotiModal(!notiModal);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                {check ? (
+                  <View>
+                    <Text style={[styles.textStyle, {color: colors.dark}]}>
+                      {text}
+                    </Text>
+                    <Text style={styles.textStyle}>
+                      {'\n'} Room {roomNumber} - Type:
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={styles.cancelBtn}
+                        onPress={() => setNotiModal(!notiModal)}>
+                        <Text style={styles.buttonText}>Cancel</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.confirmBtn}
+                        onPress={() => bookHomestay()}>
+                        <Text style={styles.buttonText}>OK</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  <View>
+                    <Text style={[styles.textStyle, {color: colors.red}]}>
+                      {text}
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={styles.confirmBtn}
+                        onPress={() => setNotiModal(!notiModal)}>
+                        <Text style={styles.buttonText}>OK</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </View>
+          </Modal>
+
           <View style={styles.iconContainer}>
             <FavoriteButton item={homestay} />
           </View>
@@ -199,17 +533,16 @@ const DetailHomestayScreen = ({navigation, route}) => {
             <View
               style={{
                 marginTop: 10,
+                alignItems: 'center',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
               <View style={{flexDirection: 'row'}}>
-                <View style={{flexDirection: 'row'}}>
-                  <Icon name="star" size={20} color={colors.yellow} />
-                  <Icon name="star" size={20} color={colors.yellow} />
-                  <Icon name="star" size={20} color={colors.yellow} />
-                  <Icon name="star" size={20} color={colors.yellow} />
-                  <Icon name="star" size={20} color={colors.gray} />
-                </View>
+                <Rating
+                  imageSize={20}
+                  readonly
+                  startingValue={homestay.rating}
+                />
                 <Text
                   style={{
                     fontWeight: 'bold',
@@ -217,14 +550,14 @@ const DetailHomestayScreen = ({navigation, route}) => {
                     marginLeft: 5,
                     color: colors.black,
                   }}>
-                  4.0
+                  {homestay.rating}
                 </Text>
               </View>
               <Text style={{fontSize: 13, color: colors.gray}}>
-                365 reviews
+                {homestay.ratingvote} reviews
               </Text>
             </View>
-            <View style={{marginTop: 20}}>
+            <View style={{marginTop: 15}}>
               <Text style={{lineHeight: 20, color: colors.gray}}>
                 {homestay.details}
               </Text>
@@ -270,11 +603,57 @@ const DetailHomestayScreen = ({navigation, route}) => {
             <TouchableOpacity
               style={styles.chooseBtn}
               onPress={handlePresentModalPress}>
-              <Text>Choose</Text>
+              {timeType === 'Hourly' ? (
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <MaterialCommunityIcons
+                    name="timer-sand"
+                    size={24}
+                    style={{color: colors.black, marginLeft: 8}}
+                  />
+                  <Text style={styles.timeText}>{hourlyDuration} hour(s) </Text>
+                </View>
+              ) : timeType === 'Overnight' ? (
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <FontAwesome
+                    name="moon-o"
+                    size={24}
+                    style={{color: colors.black, marginLeft: 8}}
+                  />
+                  <Text style={styles.timeText}>{ov9Duration} night </Text>
+                </View>
+              ) : (
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <FontAwesome
+                    name="building-o"
+                    size={24}
+                    style={{color: colors.black, marginLeft: 8}}
+                  />
+                  <Text style={styles.timeText}>{ov9Duration} day(s) </Text>
+                </View>
+              )}
+              <Text
+                style={{
+                  color: colors.black,
+                  fontSize: 24,
+                  marginHorizontal: 4,
+                }}>
+                |
+              </Text>
+              <Text style={styles.timeText}>
+                {utils.formatDateTime(checkIn)}
+              </Text>
+              <AntDesign
+                name="arrowright"
+                size={18}
+                style={{color: colors.black, marginHorizontal: 4}}
+              />
+              <Text style={styles.timeText}>
+                {utils.formatDateTime(checkOut)}
+              </Text>
             </TouchableOpacity>
           </View>
           <FlatList
-            data={homestay.rooms}
+            data={roomTypes}
             vertical
             contentContainerStyle={styles.flatList}
             renderItem={({item}) => <RoomItem item={item} />}
@@ -306,7 +685,7 @@ const styles = StyleSheet.create({
     height: 60,
     width: 60,
     backgroundColor: colors.primary,
-    top: -30,
+    top: -35,
     right: 20,
     borderRadius: 30,
     justifyContent: 'center',
@@ -505,16 +884,82 @@ const styles = StyleSheet.create({
   },
 
   timeContainer: {
-    marginVertical: 10,
+    marginTop: 10,
   },
+  timeText: {
+    color: colors.black,
+    fontSize: 15,
+    fontFamily: 'Lato-Regular',
+  },
+
   chooseBtn: {
-    height: 40,
-    width: 60,
-    backgroundColor: colors.primary,
-    alignContent: 'center',
-    alignItems: 'center',
+    height: 45,
+    width: 320,
+    padding: 2.5,
+    backgroundColor: '#EFEEFC',
+    flexDirection: 'row',
     alignSelf: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#BCB6DC',
+  },
+
+  centeredView: {
+    flex: 1,
     justifyContent: 'center',
-    borderRadius: 15,
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  textStyle: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: colors.black,
+    fontFamily: 'Inter-Regular',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  confirmBtn: {
+    backgroundColor: colors.primary,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+  },
+  cancelBtn: {
+    backgroundColor: colors.gray,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily: 'Lato-Regular',
+    textAlign: 'center',
+  },
+  flatListVertical: {
+    paddingVertical: 20,
   },
 });

@@ -3,23 +3,23 @@ import React, {useState, useEffect} from 'react';
 import database from '@react-native-firebase/database';
 import firestore from '@react-native-firebase/firestore';
 import CompletedBox from '../CompleteButton';
+import colors from '../../assets/consts/colors';
 
 const History = () => {
-  const [bookingData, setBookingData] = useState(null);
-  const [roomData, setRoomData] = useState(null);
+  const [bookingData, setBookingData] = useState([]);
+  const [roomData, setRoomData] = useState([]);
   const userId = 'UbtD9KFlGDd2kJwqwwt9v23lyFs2';
   const fetchDataById = id => {
     // Thực hiện truy vấn dữ liệu dựa trên id
     database()
       .ref('/homestays')
       .orderByChild('homestay_id')
-      .equalTo(1)
+      .equalTo(id)
       .once('value')
       .then(snapshot => {
         if (snapshot.exists()) {
           snapshot.forEach(childSnapshot => {
             const room = childSnapshot.val();
-            console.log(room);
             setRoomData(room);
           });
         } else {
@@ -67,7 +67,9 @@ const History = () => {
               {roomData.name}
             </Text>
             <Text style={styles.cardPrice}>{bookingData.price} $</Text>
-            <CompletedBox />
+            <View style={{marginLeft: 150}}>
+              <CompletedBox />
+            </View>
           </View>
         </>
       ) : (
@@ -100,15 +102,15 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   cardTitle: {
-    color: 'black',
-    fontSize: 16,
-    maxWidth: 190,
+    color: colors.dark,
+    fontSize: 18,
+    maxWidth: 250,
     marginBottom: 10,
   },
   cardPrice: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: 'black',
+    color: colors.dark,
   },
   noItemsText: {
     textAlign: 'center',

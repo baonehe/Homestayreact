@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {SliderBox} from 'react-native-image-slider-box';
 import {Text, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FastImage from 'react-native-fast-image';
 import images from '../../assets/images';
 import colors from '../../assets/consts/colors';
@@ -35,11 +36,86 @@ const FastBookingDetailHotel = ({navigation, route}) => {
   const [price, setPrice] = useState();
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  const bottomSheetModalRef = useRef(null);
-  // handle
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
-  }, []);
+  const handleBookHomestay = useCallback(
+    roomType => {
+      // if (isDataLoaded) {
+      //   console.log('room', rooms);
+      //   const roomList = rooms[roomType.roomtype_id];
+      //   if (roomList && roomList.length > 0) {
+      //     // Phòng thuộc roomtype_id tồn tại
+      //     const firstRoom = roomList[0];
+      //     setCheck(true);
+      //     setText('Confirm Booking');
+      //     setRoomNumber(firstRoom.room_number);
+      //     setType(roomType.room_type);
+      //     if (timeType === 'Hourly') {
+      //       setPrice(roomType.price_per_hour * hourlyDuration);
+      //     } else if (timeType === 'Overnight') {
+      //       setPrice(roomType.price_per_night);
+      //     } else {
+      //     }
+      //     setChooseRoom(firstRoom);
+      //     setNotiModal(true);
+      //   } else {
+      //     // Không có phòng thuộc roomtype_id
+      //     setCheck(false);
+      //     setText('There are currently no available rooms of this type');
+      //     setNotiModal(true);
+      //   }
+      // } else {
+      //   // Hiển thị thông báo hoặc xử lý khác khi dữ liệu chưa sẵn sàng
+      //   console.log('Data is loading...');
+      // }
+    },
+    [hourlyDuration, isDataLoaded, rooms, timeType],
+  );
+
+  function generateBookingId() {
+    const length = 10; // Độ dài của bookingId
+    let bookingId = '';
+
+    for (let i = 0; i < length; i++) {
+      const randomDigit = Math.floor(Math.random() * 10); // Sinh ra một số ngẫu nhiên từ 0 đến 9
+      bookingId += randomDigit.toString(); // Chuyển đổi số thành chuỗi và thêm vào bookingId
+    }
+
+    return bookingId;
+  }
+
+  const bookHomestay = async () => {
+    const newBooking = {
+      booking_id: generateBookingId(),
+      room_id: chooseRoom.room_id,
+      user_id: await AsyncStorage.getItem('userId'),
+      check_in: selector.checkIn,
+      check_out: selector.checkOut,
+      price: price,
+      status: 'booked',
+    };
+    setNotiModal(!notiModal);
+    database()
+      .ref('booking')
+      .push(newBooking)
+      .then(() => {
+        console.log('Booking added to the database');
+        fetchRooms();
+      })
+      .catch(error => {
+        console.log('Error adding booking to the database: ', error);
+        // Xử lý lỗi nếu có
+      });
+    firestore()
+      .collection('Booking')
+      .add(newBooking)
+      .then(() => {
+        console.log('Booking added to the database');
+        fetchRooms();
+      })
+      .catch(error => {
+        console.log('Error adding booking to the database: ', error);
+        // Xử lý lỗi nếu có
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -55,70 +131,17 @@ const FastBookingDetailHotel = ({navigation, route}) => {
         <Text style={styles.tittle}>{item.homestayName}</Text>
       </View>
 
-      <View style={styles.choseTimes}>
-        <View style={styles.timeContainer}>
-          <TouchableOpacity
-            style={styles.chooseBtn}
-            onPress={handlePresentModalPress}>
-            {timeType === 'Hourly' ? (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <MaterialCommunityIcons
-                  name="timer-sand"
-                  size={24}
-                  style={{color: colors.black, marginLeft: 8}}
-                />
-                <Text style={styles.timeText}>{hourlyDuration} hour(s) </Text>
-              </View>
-            ) : timeType === 'Overnight' ? (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome
-                  name="moon-o"
-                  size={24}
-                  style={{color: colors.black, marginLeft: 8}}
-                />
-                <Text style={styles.timeText}>{ov9Duration} night </Text>
-              </View>
-            ) : (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <FontAwesome
-                  name="building-o"
-                  size={24}
-                  style={{color: colors.black, marginLeft: 8}}
-                />
-                <Text style={styles.timeText}>{ov9Duration} day(s) </Text>
-              </View>
-            )}
-            <Text
-              style={{
-                color: colors.black,
-                fontSize: 24,
-                marginHorizontal: 4,
-              }}>
-              |
-            </Text>
-            <Text style={styles.timeText}>{utils.formatDateTime(checkIn)}</Text>
-            <AntDesign
-              name="arrowright"
-              size={18}
-              style={{color: colors.black, marginHorizontal: 4}}
-            />
-            <Text style={styles.timeText}>
-              {utils.formatDateTime(checkOut)}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
       <View style={styles.time}>
         <View style={styles.checkIn}>
           <Text style={{fontSize: 16, marginTop: 10}}>Check-in</Text>
-          <Text style={styles.dayCkI}>14/02/2023</Text>
-          <Text style={styles.timeCkI}>20h00</Text>
+          <Text style={styles.dayCkI}>{utils.formatDate(checkIn)}</Text>
+          <Text style={styles.timeCkI}>{utils.formatTime(checkIn)}</Text>
         </View>
         <Text style={styles.textTo}>TO</Text>
         <View style={styles.checkOut}>
           <Text style={{fontSize: 16, marginTop: 10}}>Check-out</Text>
-          <Text style={styles.dayCkO}>15/02/2023</Text>
-          <Text style={styles.timeCkO}>20h00</Text>
+          <Text style={styles.dayCkO}>{utils.formatDate(checkOut)}</Text>
+          <Text style={styles.timeCkO}>{utils.formatTime(checkOut)}</Text>
         </View>
       </View>
       <SliderBox
@@ -188,7 +211,8 @@ const FastBookingDetailHotel = ({navigation, route}) => {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: colors.dark,
-        }}>
+        }}
+        onPress={() => handleBookHomestay(item)}>
         <Text style={{fontSize: 16, fontFamily: 'Merriweather-Bold'}}>
           BOOK NOW
         </Text>

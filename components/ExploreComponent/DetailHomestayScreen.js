@@ -39,6 +39,7 @@ import {
 } from '../redux/timestampReducers';
 import FavoriteButton from '../FavoriteButton';
 import database from '@react-native-firebase/database';
+import firestore from '@react-native-firebase/firestore';
 import colors from '../../assets/consts/colors';
 import sizes from '../../assets/consts/sizes';
 import images from '../../assets/images';
@@ -60,6 +61,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const [check, setCheck] = useState(false);
   const [text, setText] = useState('Confirm Booking');
   const [roomNumber, setRoomNumber] = useState();
+  const [type, setType] = useState();
   const [price, setPrice] = useState();
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
@@ -105,6 +107,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
           setCheck(true);
           setText('Confirm Booking');
           setRoomNumber(firstRoom.room_number);
+          setType(roomType.room_type);
           if (timeType === 'Hourly') {
             setPrice(roomType.price_per_hour * hourlyDuration);
           } else if (timeType === 'Overnight') {
@@ -162,6 +165,17 @@ const DetailHomestayScreen = ({navigation, route}) => {
         console.log('Error adding booking to the database: ', error);
         // Xử lý lỗi nếu có
       });
+    firestore()
+      .collection('Booking')
+      .add(newBooking)
+      .then(() => {
+        console.log('Booking added to the database');
+        fetchRooms();
+      })
+      .catch(error => {
+        console.log('Error adding booking to the database: ', error);
+        // Xử lý lỗi nếu có
+      });
   };
 
   const ShowExtension = ({item}) => {
@@ -202,7 +216,9 @@ const DetailHomestayScreen = ({navigation, route}) => {
 
   const RoomItem = ({item}) => {
     return (
-      <TouchableOpacity style={styles.roomCard}>
+      <TouchableOpacity
+        style={styles.roomCard}
+        onPress={() => navigation.navigate('FastBookingDetailHotel', {item})}>
         <SliderBox
           ImageComponent={FastImage}
           images={listImages}
@@ -348,6 +364,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
   }, [homestay.homestay_id]);
 
   const fetchRooms = useCallback(async () => {
+    setIsDataLoaded(false);
     const snapshot = await database().ref('rooms').once('value');
     if (snapshot && snapshot.val) {
       const data = snapshot.val();
@@ -486,7 +503,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
                       {text}
                     </Text>
                     <Text style={styles.textStyle}>
-                      {'\n'} Room {roomNumber} - Type:
+                      {'\n'} Room {roomNumber} - Type: {type}
                     </Text>
                     <View style={styles.buttonContainer}>
                       <TouchableOpacity
@@ -647,12 +664,16 @@ const DetailHomestayScreen = ({navigation, route}) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <FlatList
-            data={roomTypes}
-            vertical
-            contentContainerStyle={styles.flatList}
-            renderItem={({item}) => <RoomItem item={item} />}
-          />
+          {isDataLoaded ? (
+            <FlatList
+              data={roomTypes}
+              vertical
+              contentContainerStyle={styles.flatList}
+              renderItem={({item}) => <RoomItem item={item} />}
+            />
+          ) : (
+            <Text style={styles.loadText}>Loading...</Text>
+          )}
         </View>
       </ScrollView>
       <BottomSheetModalProvider>
@@ -954,7 +975,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-Regular',
     textAlign: 'center',
   },
-  flatListVertical: {
-    paddingVertical: 20,
+  loadText: {
+    alignSelf: 'center',
+    fontSize: 20,
+    fontFamily: 'Lato-Regular',
+    color: colors.red,
+    marginVertical: 20,
   },
 });

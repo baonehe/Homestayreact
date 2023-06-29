@@ -30,6 +30,7 @@ const Home = ({navigation}) => {
   const dispatch = useDispatch();
   const [homestays, setHomestays] = useState([]);
 
+  const [searchText, setSearchText] = useState();
   const categoryIcons = [
     <Image name="Near you" source={images.nearyou} />,
     <Image name="Hourly" source={images.hourly} />,
@@ -56,13 +57,12 @@ const Home = ({navigation}) => {
             <TouchableOpacity
               key={index}
               style={styles.iconContainer}
-              onPress={() => {
-                console.log(1);
+              onPress={() =>
                 navigation.navigate('SearchHomestay', {
                   type: icon.props.name,
                   province: selectedProvince,
-                });
-              }}>
+                })
+              }>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
             </TouchableOpacity>
@@ -122,7 +122,7 @@ const Home = ({navigation}) => {
             <Text
               style={styles.itemLocationText}
               ellipsizeMode="tail"
-              numberOfLines={3}>
+              numberOfLines={2}>
               {hotel.location}
             </Text>
           </View>
@@ -287,7 +287,9 @@ const Home = ({navigation}) => {
         <View style={styles.searchBar}>
           <TouchableOpacity
             style={styles.searchBtn}
-            onPress={() => navigation.navigate('SearchHomestay')}>
+            onPress={() =>
+              navigation.navigate('SearchHomestay', {searchText: searchText})
+            }>
             <Ionicons name="search-outline" style={styles.searchIcon} />
           </TouchableOpacity>
           <TextInput
@@ -296,8 +298,8 @@ const Home = ({navigation}) => {
             style={styles.searchInput}
             placeholder="Search for destinations, hotels, ..."
             placeholderTextColor="#333333"
-            // value={searchTerm}
-            // onChangeText={onSearchTermChange}
+            value={searchText}
+            onChangeText={text => setSearchText(text)}
             // onEndEditing={onSearchTermSubmit}
           />
         </View>

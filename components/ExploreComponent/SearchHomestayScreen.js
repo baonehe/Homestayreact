@@ -40,7 +40,7 @@ const SearchHomestay = ({navigation, route}) => {
   const {type, province} = route.params;
   const currentLocation = useSelector(state => state.location.currentLocation);
   const dispatch = useDispatch();
-
+  console.log('tinh:', province);
   /* Map View */
   const mapRef = useRef(null);
   const markerRefs = useMemo(() => ({}), []);
@@ -49,7 +49,7 @@ const SearchHomestay = ({navigation, route}) => {
   const [homestaySuggestions, setHomestaySuggestions] = useState([]);
   const [selectedMarkerRef, setSelectedMarkerRef] = useState(null);
 
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState(route.params.searchText);
   const [searchResult, setSearchResult] = useState(null);
 
   const handleSearch = () => {};
@@ -222,6 +222,7 @@ const SearchHomestay = ({navigation, route}) => {
   const [provinces, setProvinces] = useState([]); // Provinces list variable
   const [selectedProvince, setSelectedProvince] = useState(province); // Choose province
   const [types, setTypes] = useState([]);
+  const [allChecked, setAllChecked] = useState(false);
   const [selectedType, setSelectedType] = useState([]);
 
   const [minValue, setMinValue] = useState(utils.MIN_VALUE);
@@ -412,7 +413,17 @@ const SearchHomestay = ({navigation, route}) => {
     [handleTypeChange],
   );
 
-  const handleSelectAll = useCallback(() => {}, []);
+  const handleSelectAll = useCallback(checked => {
+    setAllChecked(!checked);
+    setTypes(prevTypes => {
+      return prevTypes.map(item => {
+        return {
+          ...item,
+          checked: !checked,
+        };
+      });
+    });
+  }, []);
   // Request permission and fetch data depend on type, location
   useEffect(() => {
     requestLocationPermission();
@@ -432,6 +443,30 @@ const SearchHomestay = ({navigation, route}) => {
             homestay.coordinates.longitude,
           );
         });
+
+        if (province === undefined) {
+          homestays.sort((a, b) => {
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+            const containsSearchTextA = nameA.includes(
+              searchText.toLowerCase(),
+            );
+            const containsSearchTextB = nameB.includes(
+              searchText.toLowerCase(),
+            );
+
+            if (containsSearchTextA && !containsSearchTextB) {
+              return -1;
+            } else if (!containsSearchTextA && containsSearchTextB) {
+              return 1;
+            } else {
+              return nameB.localeCompare(nameA);
+            }
+          });
+
+          setHomestayData(filteredHomestays);
+          return;
+        }
 
         if (type === 'Near you') {
           // Filter items within a maximum distance of 10km
@@ -531,7 +566,7 @@ const SearchHomestay = ({navigation, route}) => {
 
   // Update data when current location change
   useEffect(() => {
-    if (homestayData && currentLocation) {
+    if (homestayData && currentLocation && province !== undefined) {
       const updatedData = homestayData.map(homestay => {
         const updatedHomestay = {...homestay};
         updatedHomestay.distance = calculateDistance(
@@ -549,7 +584,6 @@ const SearchHomestay = ({navigation, route}) => {
     if (location) {
       mapRef.current?.animateToRegion(location);
     }
-    console.log(location);
   }, [location]);
 
   return (
@@ -791,9 +825,11 @@ const SearchHomestay = ({navigation, route}) => {
                     size={22}
                     fillColor={colors.primary}
                     unfillColor="#FFFFFF"
+                    disableBuiltInState
                     iconStyle={{borderColor: colors.primary, borderRadius: 0}}
                     innerIconStyle={{borderWidth: 1.8, borderRadius: 0}}
-                    onPress={() => handleSelectAll()}
+                    onPress={() => handleSelectAll(allChecked)}
+                    isChecked={allChecked}
                   />
                 </View>
               </View>

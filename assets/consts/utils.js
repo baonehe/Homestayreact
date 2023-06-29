@@ -21,6 +21,30 @@ const utils = {
 
     return formattedDateTime;
   },
+  formatDate: function (dateTime) {
+    if (typeof dateTime !== 'string' && typeof dateTime !== 'number') {
+      throw new Error('Invalid input');
+    }
+
+    // Chuyển đổi đầu vào thành chuỗi
+    const input = String(dateTime);
+
+    // Lấy giờ và ngày tháng từ chuỗi đầu vào
+    const [time, date] = input.split(', ');
+    return `${date}`;
+  },
+  formatTime: function (dateTime) {
+    if (typeof dateTime !== 'string' && typeof dateTime !== 'number') {
+      throw new Error('Invalid input');
+    }
+
+    // Chuyển đổi đầu vào thành chuỗi
+    const input = String(dateTime);
+
+    // Lấy giờ và ngày tháng từ chuỗi đầu vào
+    const [time, date] = input.split(', ');
+    return `${time}`;
+  },
 };
 
 export default utils;

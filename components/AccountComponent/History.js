@@ -1,77 +1,106 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
 import React, {useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import database from '@react-native-firebase/database';
 import firestore from '@react-native-firebase/firestore';
 import CompletedBox from '../CompleteButton';
 import colors from '../../assets/consts/colors';
 
 const History = () => {
-  const [bookingData, setBookingData] = useState([]);
+  const [bookingData, setBookingData] = useState(null);
   const [roomData, setRoomData] = useState([]);
-  const userId = 'UbtD9KFlGDd2kJwqwwt9v23lyFs2';
-  const fetchDataById = id => {
-    // Thực hiện truy vấn dữ liệu dựa trên id
-    database()
-      .ref('/homestays')
-      .orderByChild('homestay_id')
-      .equalTo(id)
-      .once('value')
-      .then(snapshot => {
-        if (snapshot.exists()) {
-          snapshot.forEach(childSnapshot => {
-            const room = childSnapshot.val();
-            setRoomData(room);
-          });
-        } else {
-          console.log('No room found for room_id:', id);
-        }
-      })
-      .catch(error => {
-        console.log('Error fetching room:', error);
-      });
+  const [userId, setUserId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchDataById = async id => {
+    try {
+      const snapshot = await database()
+        .ref('/homestays')
+        .orderByChild('homestay_id')
+        .equalTo(id)
+        .once('value');
+
+      if (snapshot.exists()) {
+        const rooms = [];
+        snapshot.forEach(childSnapshot => {
+          const room = childSnapshot.val();
+          rooms.push(room);
+        });
+        setRoomData(rooms);
+      } else {
+        console.log('No room found for room_id:', id);
+      }
+    } catch (error) {
+      console.log('Error fetching room:', error);
+    }
   };
 
-  const fetchBookingDataByUserId = async userId => {
-    const fire = firestore()
-      .collection('Booking')
-      .where('user_id', '==', userId)
-      .get()
-      .then(querySnapshot => {
-        if (!querySnapshot.empty) {
-          const document = querySnapshot.docs[0].data();
-          setBookingData(document);
-          fetchDataById(document.room_id);
-        } else {
-          setBookingData(null);
-        }
-      })
-      .catch(error => {
-        console.log('Error getting booking document: ', error);
+  const fetchBookingDataByUserId = async id => {
+    try {
+      const querySnapshot = await firestore()
+        .collection('Booking')
+        .where('user_id', '==', id)
+        .get();
+
+      if (!querySnapshot.empty) {
+        const document = querySnapshot.docs[0].data();
+        setBookingData(document);
+        await fetchDataById(document.room_id);
+      } else {
         setBookingData(null);
-      });
+      }
+    } catch (error) {
+      console.log('Error getting booking document:', error);
+      setBookingData(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   useEffect(() => {
-    fetchBookingDataByUserId(userId);
-  }, []);
+    const fetchUserId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('userId');
+        setUserId(id);
+        console.log(userId);
+
+        await fetchBookingDataByUserId(userId);
+      } catch (error) {
+        console.log('Error fetching user ID:', error);
+      }
+    };
+
+    fetchUserId();
+  }, [userId]);
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
-    <View style={styles.card}>
-      {bookingData ? (
-        <>
-          <Image
-            style={styles.salesOffCardImage}
-            source={{uri: roomData.image}}
-          />
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle} numberOfLines={3}>
-              {roomData.name}
-            </Text>
-            <Text style={styles.cardPrice}>{bookingData.price} $</Text>
-            <View style={{marginLeft: 150}}>
-              <CompletedBox />
+    <View style={styles.container}>
+      {bookingData && roomData ? (
+        <FlatList
+          data={roomData}
+          keyExtractor={item => item.homestay_id.toString()}
+          renderItem={({item}) => (
+            <View style={styles.card}>
+              <Image
+                style={styles.salesOffCardImage}
+                source={{uri: item.image}}
+              />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle} numberOfLines={3}>
+                  {item.name}
+                </Text>
+                <Text style={styles.cardPrice}>{bookingData.price} $</Text>
+                <View style={{marginLeft: 150}}>
+                  <CompletedBox />
+                </View>
+              </View>
             </View>
-          </View>
-        </>
+          )}
+        />
       ) : (
         <Text style={styles.noItemsText}>No booking data available</Text>
       )}

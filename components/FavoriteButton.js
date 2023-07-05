@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,10 +9,11 @@ const FavoriteButton = ({item}) => {
   const favorites = useSelector(state => state.favorites) || [];
 
   const isFavorite = favorites.some(
-    favorite => favorite && favorite.id === item.id,
+    favorite => favorite && favorite.homestay_id === item.homestay_id,
   );
-
-
+  useEffect(() => {
+    console.log('sfksdfkhdsfhdskjfhdsk', favorites);
+  });
   const handleFavoritePress = () => {
     if (isFavorite) {
       dispatch(removeFavorite(item));

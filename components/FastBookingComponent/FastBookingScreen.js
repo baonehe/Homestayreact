@@ -195,7 +195,8 @@ const FastBooking = ({navigation}) => {
         </View>
         <Image
           source={images.line}
-          style={{height: 25, width: '100%', opacity: 0.3}}></Image>
+          style={{height: 25, width: '100%', opacity: 0.3}}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -241,7 +242,7 @@ const FastBooking = ({navigation}) => {
             <Text style={styles.searchButton}>Search</Text>
           </TouchableOpacity>
 
-          <ScrollView>
+          <ScrollView style={{marginBottom: 200}}>
             <FlatList
               data={filteredHomestays}
               renderItem={({item}) => (

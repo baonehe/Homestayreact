@@ -13,7 +13,7 @@ import {
   setMarkedDates,
   setCurrentMonth,
 } from '../redux/timestampReducers';
-import {addHours, addDays, format, parse} from 'date-fns';
+import {addHours, addDays, format, parse, parseISO} from 'date-fns';
 import colors from '../../assets/consts/colors';
 import utils from '../../assets/consts/utils';
 
@@ -23,71 +23,73 @@ const Overnight = () => {
   const overnight = useSelector(state => state.timestamp.overnight);
   const overnightDispatch = useDispatch();
 
-  const onPressDay = day => {
-    const tomorrow = addDays(
-      parse(day.dateString, 'yyyy-MM-dd', new Date()),
-      1,
-    );
-    const dayString = format(day.dateString, 'yyyy-MM-dd');
-    const tomorrowString = format(tomorrow, 'yyyy-MM-dd');
+  const onPressDay = useCallback(
+    day => {
+      const dayString = day.dateString;
+      const tomorrow = addDays(parse(dayString, 'yyyy-MM-dd', new Date()), 1);
+      const tomorrowString = format(tomorrow, 'yyyy-MM-dd');
+      const checkInDate = format(new Date(day.timestamp), 'dd/MM/yyyy');
+      const checkOutDate = format(
+        addDays(new Date(day.timestamp), 1),
+        'dd/MM/yyyy',
+      );
 
-    overnightDispatch(
-      setMarkedDates({
-        markedDates: {
-          [dayString]: {
-            selected: true,
-            startingDay: true,
-            color: colors.light,
-            textColor: colors.primary,
+      overnightDispatch(
+        setMarkedDates({
+          markedDates: {
+            [dayString]: {
+              selected: true,
+              startingDay: true,
+              color: colors.light,
+              textColor: colors.primary,
+            },
+            [tomorrowString]: {
+              selected: true,
+              endingDay: true,
+              color: colors.light,
+              textColor: colors.primary,
+            },
           },
-          [tomorrowString]: {
-            selected: true,
-            endingDay: true,
-            color: colors.light,
-            textColor: colors.primary,
-          },
-        },
-        tabName: 'overnight',
-      }),
-    );
+          tabName: 'overnight',
+        }),
+      );
 
-    overnightDispatch(
-      setCheckInDate({
-        checkInDate: format(day.dateString, 'dd/MM/yyyy'),
-        tabName: 'overnight',
-      }),
-    );
-    overnightDispatch(
-      setCheckOutDate({
-        checkOutDate: format(tomorrow, 'dd/MM/yyyy'),
-        tabName: 'overnight',
-      }),
-    );
+      overnightDispatch(
+        setCheckInDate({
+          checkInDate: checkInDate,
+          tabName: 'overnight',
+        }),
+      );
 
-    overnightDispatch(
-      setCurrentMonth({
-        currentMonth: format(day.dateString, 'yyyy-MM'),
-        tabName: 'overnight',
-      }),
-    );
+      overnightDispatch(
+        setCheckOutDate({
+          checkOutDate: checkOutDate,
+          tabName: 'overnight',
+        }),
+      );
 
-    const checkInTime = overnight.checkInTime;
-    const checkOutTime = overnight.checkOutTime;
-    const formattedCheckIn = `${checkInTime}, ${format(
-      day.dateString,
-      'dd/MM/yyyy',
-    )}`;
-    const formattedCheckOut = `${checkOutTime}, ${format(
-      tomorrow,
-      'dd/MM/yyyy',
-    )}`;
-    overnightDispatch(
-      setCheckInTab({checkIn: formattedCheckIn, tabName: 'overnight'}),
-    );
-    overnightDispatch(
-      setCheckOutTab({checkIn: formattedCheckOut, tabName: 'overnight'}),
-    );
-  };
+      overnightDispatch(
+        setCurrentMonth({
+          currentMonth: day.dateString.slice(0, 7),
+          tabName: 'overnight',
+        }),
+      );
+
+      const checkInTime = overnight.checkInTime;
+      const checkOutTime = overnight.checkOutTime;
+      console.log(checkInTime, checkOutTime);
+      const formattedCheckIn = `${checkInTime}, ${checkInDate}`;
+      const formattedCheckOut = `${checkOutTime}, ${checkOutDate}`;
+      console.log(formattedCheckIn, formattedCheckOut);
+      overnightDispatch(
+        setCheckInTab({checkIn: formattedCheckIn, tabName: 'overnight'}),
+      );
+      overnightDispatch(
+        setCheckOutTab({checkOut: formattedCheckOut, tabName: 'overnight'}),
+      );
+    },
+    [overnight.checkInTime, overnight.checkOutTime, overnightDispatch],
+  );
 
   const handleApplyBtn = useCallback(() => {
     const formattedCheckIn = overnight.checkIn;

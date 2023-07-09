@@ -28,6 +28,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {addHours, format, parse, isWithinInterval, isBefore} from 'date-fns';
 import TimestampPicker from '../SupComponent/TimestampPicker';
 import {
+  setTimeType,
   setCheckIn,
   setCheckOut,
   setCheckInTab,
@@ -38,6 +39,7 @@ import {
   getTimeframeList,
 } from '../redux/timestampReducers';
 import FavoriteButton from '../FavoriteButton';
+import {onDisplayNotification} from '../NotificationComponent/PushNotiHelper';
 import database from '@react-native-firebase/database';
 import firestore from '@react-native-firebase/firestore';
 import colors from '../../assets/consts/colors';
@@ -52,6 +54,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
   const hourlyDuration = useSelector(state => state.timestamp.hourly.duration);
   const ov9Duration = useSelector(state => state.timestamp.overnight.duration);
+  const dailyDuration = useSelector(state => state.timestamp.daily.duration);
   const [roomTypes, setRoomTypes] = useState([]);
   const [rooms, setRooms] = useState();
   const checkIn = useSelector(state => state.timestamp.checkIn);
@@ -113,6 +116,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
           } else if (timeType === 'Overnight') {
             setPrice(roomType.price_per_night);
           } else {
+            setPrice(roomType.price_per_night * dailyDuration);
           }
 
           setChooseRoom(firstRoom);
@@ -128,7 +132,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
         console.log('Data is loading...');
       }
     },
-    [hourlyDuration, isDataLoaded, rooms, timeType],
+    [dailyDuration, hourlyDuration, isDataLoaded, rooms, timeType],
   );
 
   function generateBookingId() {
@@ -144,8 +148,10 @@ const DetailHomestayScreen = ({navigation, route}) => {
   }
 
   const bookHomestay = async () => {
+    const booking_id = generateBookingId();
     const newBooking = {
-      booking_id: generateBookingId(),
+      booking_id: booking_id,
+      homestay_id: homestay.homestay_id,
       room_id: chooseRoom.room_id,
       user_id: await AsyncStorage.getItem('userId'),
       check_in: selector.checkIn,
@@ -176,6 +182,10 @@ const DetailHomestayScreen = ({navigation, route}) => {
         console.log('Error adding booking to the database: ', error);
         // Xử lý lỗi nếu có
       });
+    onDisplayNotification({
+      title: 'Stelio Booking',
+      body: `Your booking ${booking_id} is confirmed.`,
+    });
   };
 
   const ShowExtension = ({item}) => {
@@ -215,99 +225,113 @@ const DetailHomestayScreen = ({navigation, route}) => {
   };
 
   const RoomItem = ({item}) => {
-    return (
-      <TouchableOpacity
-        style={styles.roomCard}
-        onPress={() => navigation.navigate('FastBookingDetailHotel', {item})}>
-        <SliderBox
-          ImageComponent={FastImage}
-          images={listImages}
-          autoplay={true}
-          circleLoop={true}
-          parentWidth={350}
-          sliderBoxHeight={175}
-          activeOpacity={1}
-          dotStyle={styles.dotSlider}
-          dotColor={colors.light}
-          inactiveDotColor={colors.dark}
-          imageLoadingColor={colors.primary}
-          ImageComponentStyle={styles.boxImageSlider}
-        />
+    const hasRooms = rooms[item.roomtype_id];
+    const isAvailable = hasRooms !== undefined && hasRooms.length > 0;
+    if (isAvailable) {
+      return (
+        <TouchableOpacity
+          style={styles.roomCard}
+          onPress={() => navigation.navigate('FastBookingDetailHotel', {item})}>
+          <SliderBox
+            ImageComponent={FastImage}
+            images={listImages}
+            autoplay={true}
+            circleLoop={true}
+            parentWidth={350}
+            sliderBoxHeight={175}
+            activeOpacity={1}
+            dotStyle={styles.dotSlider}
+            dotColor={colors.light}
+            inactiveDotColor={colors.dark}
+            imageLoadingColor={colors.primary}
+            ImageComponentStyle={styles.boxImageSlider}
+          />
 
-        <View style={styles.inforRoom}>
-          <Text style={styles.roomTypeText}>{item.room_type}</Text>
-          <View style={styles.detailRoom}>
-            <View style={styles.priceContainer}>
-              <Text style={styles.timeTypeText}>
-                {item.timetype.map((type, index) =>
-                  type === timeType ? <Text key={index}>{type}</Text> : null,
-                )}
-              </Text>
-              <Text style={styles.priceText}>
-                {' '}
-                {item.timetype.includes(timeType) ? (
-                  <Text>
-                    {timeType === 'Hourly'
-                      ? item.price_per_hour * hourlyDuration
-                      : timeType === 'Overnight'
-                      ? item.price_per_night
-                      : item.price_per_night}
-                    $
-                  </Text>
-                ) : null}
-              </Text>
-            </View>
-            <View style={styles.conditionContainer}>
-              <View style={styles.conditionItem}>
-                <Ionicons name="bed" size={20} color={colors.primary} />
-                <Text style={styles.conditionText}>{item.condition[0]}</Text>
+          <View style={styles.inforRoom}>
+            <Text style={styles.roomTypeText}>{item.room_type}</Text>
+            <View style={styles.detailRoom}>
+              <View style={styles.priceContainer}>
+                <Text style={styles.timeTypeText}>{timeType}</Text>
+                <Text style={styles.priceText}>
+                  {' '}
+                  {item.timetype.includes(timeType) ? (
+                    <Text>
+                      {timeType === 'Hourly'
+                        ? item.price_per_hour * hourlyDuration
+                        : timeType === 'Overnight'
+                        ? item.price_per_night
+                        : item.price_per_night * dailyDuration}
+                      $
+                    </Text>
+                  ) : null}
+                </Text>
               </View>
-              <View style={styles.conditionItem}>
-                <MaterialCommunityIcons
-                  name="floor-plan"
-                  size={20}
-                  color={colors.primary}
+              <View style={styles.conditionContainer}>
+                <View style={styles.conditionItem}>
+                  <Ionicons name="bed" size={20} color={colors.primary} />
+                  <Text style={styles.conditionText}>{item.condition[0]}</Text>
+                </View>
+                <View style={styles.conditionItem}>
+                  <MaterialCommunityIcons
+                    name="floor-plan"
+                    size={20}
+                    color={colors.primary}
+                  />
+                  <Text style={styles.conditionText}>{item.condition[1]}</Text>
+                </View>
+                <View style={styles.conditionItem}>
+                  <MaterialCommunityIcons
+                    name="window-open-variant"
+                    size={20}
+                    color={colors.primary}
+                  />
+                  <Text style={styles.conditionText}>{item.condition[2]}</Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.provisionRoom}>
+              <View style={styles.provisionItem}>
+                <AntDesign name="creditcard" size={16} color={colors.black} />
+                <Text style={styles.provisionText}>{item.provision[0]}</Text>
+              </View>
+              <View style={styles.provisionItem}>
+                <FontAwesome5 name="coins" size={16} color={colors.black} />
+                <Text style={styles.provisionText}>{item.provision[1]}</Text>
+              </View>
+            </View>
+            <View style={styles.policyRoom}>
+              <View style={styles.policyItem}>
+                <Ionicons
+                  name="md-information-circle-outline"
+                  size={27}
+                  color={colors.secondary}
                 />
-                <Text style={styles.conditionText}>{item.condition[1]}</Text>
+                <Text style={styles.policyText}>Chính sách hoàn trả</Text>
               </View>
-              <View style={styles.conditionItem}>
-                <MaterialCommunityIcons
-                  name="window-open-variant"
-                  size={20}
-                  color={colors.primary}
-                />
-                <Text style={styles.conditionText}>{item.condition[2]}</Text>
-              </View>
+              <TouchableOpacity
+                style={styles.bookBtn}
+                onPress={() => handleBookHomestay(item)}>
+                <Text style={styles.textBtn}>BOOK</Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.provisionRoom}>
-            <View style={styles.provisionItem}>
-              <AntDesign name="creditcard" size={16} color={colors.black} />
-              <Text style={styles.provisionText}>{item.provision[0]}</Text>
-            </View>
-            <View style={styles.provisionItem}>
-              <FontAwesome5 name="coins" size={16} color={colors.black} />
-              <Text style={styles.provisionText}>{item.provision[1]}</Text>
-            </View>
-          </View>
-          <View style={styles.policyRoom}>
-            <View style={styles.policyItem}>
-              <Ionicons
-                name="md-information-circle-outline"
-                size={27}
-                color={colors.secondary}
-              />
-              <Text style={styles.policyText}>Chính sách hoàn trả</Text>
-            </View>
-            <TouchableOpacity
-              style={styles.bookBtn}
-              onPress={() => handleBookHomestay(item)}>
-              <Text style={styles.textBtn}>BOOK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <Text
+          style={[
+            styles.loadText,
+            {fontSize: 16, marginTop: 10, marginBottom: 0},
+          ]}>
+          No rooms for type:{' '}
+          <Text style={[styles.roomTypeText, {fontSize: 14}]}>
+            {item.room_type}
+          </Text>{' '}
+          right now.
+        </Text>
+      );
+    }
   };
 
   // Update datetime
@@ -322,6 +346,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
     const checkOutDate = selector.hourly.checkOutDate;
     const formattedCheckIn = `${itemString}, ${checkInDate}`;
     const formattedCheckOut = `${formattedCheckOutTime}, ${checkOutDate}`;
+    dispatch(setTimeType('Hourly'));
     dispatch(setCheckInTime({checkInTime: itemString, tabName: 'hourly'}));
     dispatch(
       setCheckOutTime({
@@ -353,7 +378,9 @@ const DetailHomestayScreen = ({navigation, route}) => {
 
         // Lọc các kiểu phòng theo homestay_id
         const filteredRoomTypes = roomTypesData.filter(
-          roomType => roomType.homestay_id === homestay.homestay_id,
+          roomType =>
+            roomType.homestay_id === homestay.homestay_id &&
+            roomType.timetype.includes(timeType),
         );
         console.log(filteredRoomTypes, homestay.homestay_id);
         // Lưu trữ danh sách kiểu phòng đã lọc vào state
@@ -361,7 +388,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
       }
     };
     fetchRoomTypes();
-  }, [homestay.homestay_id]);
+  }, [homestay.homestay_id, timeType]);
 
   const fetchRooms = useCallback(async () => {
     setIsDataLoaded(false);
@@ -640,7 +667,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
                     size={24}
                     style={{color: colors.black, marginLeft: 8}}
                   />
-                  <Text style={styles.timeText}>{ov9Duration} day(s) </Text>
+                  <Text style={styles.timeText}>{dailyDuration} day(s) </Text>
                 </View>
               )}
               <Text

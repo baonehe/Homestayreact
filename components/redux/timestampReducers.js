@@ -1,14 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {
-  addDays,
-  addHours,
-  setHours,
-  setMinutes,
-  setSeconds,
-  parse,
-  format,
-  startOfDay,
-} from 'date-fns';
+import {format, startOfDay} from 'date-fns';
 import colors from '../../assets/consts/colors';
 
 const now = new Date();

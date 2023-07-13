@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   PermissionsAndroid,
+  LogBox,
 } from 'react-native';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -18,11 +19,7 @@ import BottomSheet, {
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import {
-  GestureHandlerRootView,
-  FlatList,
-  ScrollView,
-} from 'react-native-gesture-handler';
+import {GestureHandlerRootView, FlatList} from 'react-native-gesture-handler';
 import {Picker} from '@react-native-picker/picker';
 import MapView, {Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -585,6 +582,10 @@ const SearchHomestay = ({navigation, route}) => {
       mapRef.current?.animateToRegion(location);
     }
   }, [location]);
+
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -6,8 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  ScrollView,
 } from 'react-native';
+import {ScrollView} from 'react-native-virtualized-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Geolocation from '@react-native-community/geolocation';

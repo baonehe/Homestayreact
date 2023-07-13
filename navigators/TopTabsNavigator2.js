@@ -3,11 +3,11 @@ import {
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
   FlatList,
   Image,
 } from 'react-native';
 import React from 'react';
+import {ScrollView} from 'react-native-virtualized-view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import colors from '../assets/consts/colors';

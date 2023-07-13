@@ -99,6 +99,9 @@ export default function Login({navigation}) {
   const SignUp = () => {
     navigation.navigate('SignUp');
   };
+  const forgotPasswordButton = () => {
+    navigation.navigate('ForgotPasswordScreen');
+  };
 
   return (
     <LinearGradient style={styles.container} colors={['#00204A', '#005792']}>
@@ -137,7 +140,7 @@ export default function Login({navigation}) {
           />
         </View>
         <TouchableOpacity
-          onPress={() => Alert.alert('Forgot Password?')}
+          onPress={() => forgotPasswordButton()}
           style={styles.forgotPasswordButton}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>

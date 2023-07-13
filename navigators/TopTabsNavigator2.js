@@ -5,45 +5,18 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Image,
 } from 'react-native';
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import colors from '../assets/consts/colors';
 import sizes from '../assets/consts/sizes';
-import notifications from '../assets/data/notifications';
 
 const Top = createMaterialTopTabNavigator();
-const TopTabsNavigator2 = ({navigation}) => {
-  const DetailItem = ({item}) => {
-    return (
-      <TouchableOpacity>
-        <View style={styles.itemCard}>
-          <View style={styles.itemIconContainer}>
-            <Ionicons
-              name={
-                item.type === 'Setting'
-                  ? 'settings-sharp'
-                  : item.type === 'Booking'
-                  ? 'calendar'
-                  : item.type === 'Promotion'
-                  ? 'md-ribbon'
-                  : 'mail'
-              }
-              size={sizes.iconSmall}
-              color={colors.primary}
-            />
-          </View>
-          <View style={styles.itemInfor}>
-            <Text style={styles.itemTitle}>{item.title}</Text>
-            <Text style={styles.itemDetails}>{item.details}</Text>
-            <Text style={styles.itemDate}>{item.date}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-  const ListItem = () => {
+
+const ListItem = ({notifications}) => {
+  if (notifications.length > 0) {
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
         <FlatList
@@ -54,6 +27,72 @@ const TopTabsNavigator2 = ({navigation}) => {
         />
       </ScrollView>
     );
+  } else {
+    return (
+      <View style={styles.container}>
+        <Image
+          style={styles.image}
+          source={{
+            uri: 'https://firebasestorage.googleapis.com/v0/b/homestay-cacf0.appspot.com/o/notification.png?alt=media&token=5f8450b8-df5f-4a9b-a338-e378036bd090',
+          }}
+        />
+        <Text style={styles.text}>There are no Notifications</Text>
+      </View>
+    );
+  }
+};
+
+const DetailItem = ({item}) => {
+  return (
+    <TouchableOpacity>
+      <View style={styles.itemCard}>
+        <View style={styles.itemIconContainer}>
+          <Ionicons
+            name={
+              item.type === 'Setting'
+                ? 'settings-sharp'
+                : item.type === 'Booking'
+                ? 'calendar'
+                : item.type === 'Promotion'
+                ? 'md-ribbon'
+                : 'mail'
+            }
+            size={sizes.iconSmall}
+            color={colors.primary}
+          />
+        </View>
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemTitle}>{item.title}</Text>
+          <Text style={styles.itemDetails}>{item.details}</Text>
+          <Text style={styles.itemDate}>{item.date}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const TopTabsNavigator2 = ({navigation, notifications}) => {
+  const filterNotificationsByType = type => {
+    return notifications.filter(item => item.type === type);
+  };
+
+  const AllScreen = () => {
+    return <ListItem notifications={notifications} />;
+  };
+
+  const BookingScreen = () => {
+    const filteredNotifications = filterNotificationsByType('Booking');
+    return <ListItem notifications={filteredNotifications} />;
+  };
+
+  const PromotionScreen = () => {
+    const filteredNotifications = filterNotificationsByType('Promotion');
+    return <ListItem notifications={filteredNotifications} />;
+  };
+
+  const OthersScreen = () => {
+    const filteredNotifications = filterNotificationsByType('Others');
+    return <ListItem notifications={filteredNotifications} />;
   };
 
   return (
@@ -67,10 +106,10 @@ const TopTabsNavigator2 = ({navigation}) => {
         tabBarPressColor: colors.transparent,
         tabBarIndicatorStyle: styles.tabBarIndicator,
       }}>
-      <Top.Screen name="All" component={ListItem} />
-      <Top.Screen name="Booking" component={ListItem} />
-      <Top.Screen name="Promotion" component={ListItem} />
-      <Top.Screen name="Others" component={ListItem} />
+      <Top.Screen name="All" component={AllScreen} />
+      <Top.Screen name="Booking" component={BookingScreen} />
+      <Top.Screen name="Promotion" component={PromotionScreen} />
+      <Top.Screen name="Others" component={OthersScreen} />
     </Top.Navigator>
   );
 };
@@ -78,8 +117,15 @@ const TopTabsNavigator2 = ({navigation}) => {
 export default TopTabsNavigator2;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    backgroundColor: colors.white,
+    paddingBottom: 20,
+  },
   tabBar: {
-    // shadowColor: colors.transparent,
     justifyContent: 'center',
     alignContent: 'center',
     marginVertical: 8,
@@ -94,7 +140,6 @@ const styles = StyleSheet.create({
     width: 70,
     backgroundColor: colors.light,
     justifyContent: 'center',
-    verticalAlign: 'middle',
     flexDirection: 'row',
     marginLeft: 15,
     marginBottom: 10,
@@ -103,7 +148,6 @@ const styles = StyleSheet.create({
   flatList: {
     paddingBottom: 30,
   },
-
   itemCard: {
     width: '100%',
     height: 200,
@@ -123,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 20,
   },
-  itemInfor: {},
+  itemInfo: {},
   itemTitle: {
     color: colors.black,
     fontFamily: 'Inter-SemiBold',
@@ -137,7 +181,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   itemDate: {
-    // width: '100%',
     position: 'absolute',
     alignSelf: 'flex-end',
     bottom: 15,
@@ -145,5 +188,15 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: 14,
     fontFamily: 'Inter-Regular',
+  },
+  image: {
+    height: 100,
+    width: 90,
+  },
+  text: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 16,
+    color: colors.black,
+    marginVertical: 15,
   },
 });

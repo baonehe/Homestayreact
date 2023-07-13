@@ -20,102 +20,38 @@ const FastBookingDetailHotel = ({navigation, route}) => {
   const {item} = route.params;
   const timeType = useSelector(state => state.timestamp.timeType);
   const selector = useSelector(state => state.timestamp);
-  const dispatch = useDispatch();
-  const hourlyDuration = useSelector(state => state.timestamp.hourly.duration);
-  const ov9Duration = useSelector(state => state.timestamp.overnight.duration);
-  const [roomTypes, setRoomTypes] = useState([]);
   const [rooms, setRooms] = useState();
   const checkIn = useSelector(state => state.timestamp.checkIn);
   const checkOut = useSelector(state => state.timestamp.checkOut);
 
-  const [chooseRoom, setChooseRoom] = useState();
-  const [check, setCheck] = useState(false);
-  const [text, setText] = useState('Confirm Booking');
-  const [roomNumber, setRoomNumber] = useState();
-  const [price, setPrice] = useState();
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-  const handleBookHomestay = useCallback(
-    roomType => {
-      // if (isDataLoaded) {
-      //   console.log('room', rooms);
-      //   const roomList = rooms[roomType.roomtype_id];
-      //   if (roomList && roomList.length > 0) {
-      //     // Phòng thuộc roomtype_id tồn tại
-      //     const firstRoom = roomList[0];
-      //     setCheck(true);
-      //     setText('Confirm Booking');
-      //     setRoomNumber(firstRoom.room_number);
-      //     setType(roomType.room_type);
-      //     if (timeType === 'Hourly') {
-      //       setPrice(roomType.price_per_hour * hourlyDuration);
-      //     } else if (timeType === 'Overnight') {
-      //       setPrice(roomType.price_per_night);
-      //     } else {
-      //     }
-      //     setChooseRoom(firstRoom);
-      //     setNotiModal(true);
-      //   } else {
-      //     // Không có phòng thuộc roomtype_id
-      //     setCheck(false);
-      //     setText('There are currently no available rooms of this type');
-      //     setNotiModal(true);
-      //   }
-      // } else {
-      //   // Hiển thị thông báo hoặc xử lý khác khi dữ liệu chưa sẵn sàng
-      //   console.log('Data is loading...');
-      // }
-    },
-    [hourlyDuration, isDataLoaded, rooms, timeType],
-  );
-
-  function generateBookingId() {
-    const length = 10; // Độ dài của bookingId
-    let bookingId = '';
-
-    for (let i = 0; i < length; i++) {
-      const randomDigit = Math.floor(Math.random() * 10); // Sinh ra một số ngẫu nhiên từ 0 đến 9
-      bookingId += randomDigit.toString(); // Chuyển đổi số thành chuỗi và thêm vào bookingId
+  const getData = (user_id, roomType) => {
+    try {
+      const data = {
+        homestay_id: item.homestay_id,
+        room_type: roomType,
+        roomtype_id: item.roomtype_id,
+        user_id: user_id,
+        check_in: selector.checkIn,
+        check_out: selector.checkOut,
+        price: item.price_per_night,
+        status: 'pending',
+      };
+      return data;
+    } catch (error) {
+      throw error;
     }
-
-    return bookingId;
-  }
-
-  const bookHomestay = async () => {
-    const newBooking = {
-      booking_id: generateBookingId(),
-      room_id: chooseRoom.room_id,
-      user_id: await AsyncStorage.getItem('userId'),
-      check_in: selector.checkIn,
-      check_out: selector.checkOut,
-      price: price,
-      status: 'booked',
-    };
-    setNotiModal(!notiModal);
-    database()
-      .ref('booking')
-      .push(newBooking)
-      .then(() => {
-        console.log('Booking added to the database');
-        fetchRooms();
-      })
-      .catch(error => {
-        console.log('Error adding booking to the database: ', error);
-        // Xử lý lỗi nếu có
-      });
-    firestore()
-      .collection('Booking')
-      .add(newBooking)
-      .then(() => {
-        console.log('Booking added to the database');
-        fetchRooms();
-      })
-      .catch(error => {
-        console.log('Error adding booking to the database: ', error);
-        // Xử lý lỗi nếu có
-      });
   };
-
+  
+  const handleBookHomestay = useCallback(async (roomType) => {
+    const user_id = await AsyncStorage.getItem('userId');
+    try {
+      const data = await getData( user_id, roomType.room_type);
+      navigation.navigate('Payment', data);
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  }, [ getData, navigation, rooms, timeType]);
+  
   return (
     <ScrollView>
     <View style={styles.container}>

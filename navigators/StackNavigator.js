@@ -15,7 +15,7 @@ import Information from '../components/AccountComponent/Information';
 import FastBookingDetailHotel from '../components/FastBookingComponent/FastBookingDetailHotelScreen';
 import FavoritesScreen from '../components/FavoritesScreen';
 import History from '../components/AccountComponent/History';
-
+import ForgotPasswordScreen from '../components/LoginComponent/ForgotPasswordScreen';
 
 const Stack = createNativeStackNavigator();
 const myTheme = {
@@ -35,6 +35,11 @@ function StackTabs() {
         name="SignUp"
         component={SignUp}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="ForgotPasswordScreen"
+        component={ForgotPasswordScreen}
+        options={{headerShown: true}}
       />
       <Stack.Screen
         name="Information"

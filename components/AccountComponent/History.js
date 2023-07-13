@@ -28,6 +28,13 @@ const History = () => {
         if (snapshot.exists()) {
           snapshot.forEach(childSnapshot => {
             const room = childSnapshot.val();
+            const booking = bookingData.find(
+              booking => booking.homestay_id === room.homestay_id,
+            );
+            if (booking) {
+              room.room_number = booking.room_number;
+              room.total_price = booking.total_price;
+            }
             rooms.push(room);
           });
         } else {
@@ -49,11 +56,10 @@ const History = () => {
       if (!querySnapshot.empty) {
         const bookings = querySnapshot.docs.map(doc => doc.data());
         setBookingData(bookings);
-        console.log(bookings);
-
-        const roomIds = bookings.map(booking => booking.room_id);
+        const roomIds = bookings.map(booking => booking.homestay_id);
         const rooms = await fetchRoomsByIds(roomIds);
         setRoomData(rooms);
+        console.log(roomData);
       } else {
         setBookingData(null);
       }
@@ -68,7 +74,6 @@ const History = () => {
     try {
       const id = await AsyncStorage.getItem('userId');
       setUserId(id);
-      console.log(id);
       await fetchBookingDataByUserId(id);
     } catch (error) {
       console.log('Error fetching user ID:', error);
@@ -83,6 +88,10 @@ const History = () => {
     return <Text>Loading...</Text>;
   }
 
+  if (!bookingData || !roomData) {
+    return <Text style={styles.noItemsText}>No booking data available</Text>;
+  }
+
   return (
     <View style={styles.container}>
       {bookingData && roomData ? (
@@ -91,7 +100,7 @@ const History = () => {
           keyExtractor={item => item.homestay_id.toString()}
           renderItem={({item}) => {
             const booking = bookingData.find(
-              booking => booking.room_id === item.homestay_id,
+              booking => booking.homestay_id === item.homestay_id,
             );
             return (
               <View style={styles.card}>
@@ -101,9 +110,9 @@ const History = () => {
                 />
                 <View style={styles.cardContent}>
                   <Text style={styles.cardTitle} numberOfLines={3}>
-                    {item.name}
+                    {item.name + ' - ' + 'No.' + item.room_number}
                   </Text>
-                  <Text style={styles.cardPrice}>{booking.price} $</Text>
+                  <Text style={styles.cardPrice}>{item.total_price} $</Text>
                   <View style={{marginLeft: 150}}>
                     <CompletedBox />
                   </View>

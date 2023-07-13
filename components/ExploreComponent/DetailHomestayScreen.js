@@ -178,42 +178,75 @@ const DetailHomestayScreen = ({navigation, route}) => {
       });
   };
 
-  const ShowExtension = ({item}) => {
+  // const ShowExtension = ({item}) => {
+  //   return (
+  //     <View
+  //       style={{
+  //         flexDirection: 'row',
+  //         alignItems: 'center',
+  //         marginStart: 40,
+  //       }}>
+  //       {item.key == 'Buffet' && item.value == '1' && (
+  //         <View style={styles.extensionItem}>
+  //           <Ionicons name="restaurant" size={30} color="black" />
+  //           <Text style={styles.extensionText}>{item.key}</Text>
+  //         </View>
+  //       )}
+  //       {item.key == 'Car_park' && item.value == '1' && (
+  //         <View style={styles.extensionItem}>
+  //           <MaterialCommunityIcons name="parking" size={30} color="black" />
+  //           <Text style={styles.extensionText}>{item.key}</Text>
+  //         </View>
+  //       )}
+  //       {item.key == 'MotorBike' && item.value == '1' && (
+  //         <View style={styles.extensionItem}>
+  //           <MaterialCommunityIcons name="motorbike" size={30} color="black" />
+  //           <Text style={styles.extensionText}>{item.key}</Text>
+  //         </View>
+  //       )}
+  //       {item.key == 'Wifi' && item.value == '1' && (
+  //         <View style={styles.extensionItem}>
+  //           <AntDesign name="wifi" size={30} color="black" />
+  //           <Text style={[styles.extensionText, {marginLeft: 4}]}>
+  //             {item.key}
+  //           </Text>
+  //         </View>
+  //       )}
+  //     </View>
+  //   );
+  // };
+  const ShowExtension = ({item, itemCount}) => {
     return (
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          marginStart: 40,
+          marginRight: 10,
         }}>
-        {item.key == 'Buffet' && item.value == '1' && (
-          <View>
-            <Ionicons name="restaurant" size={30} color="black" />
-            <Text>{item.key}</Text>
-          </View>
-        )}
-        {item.key == 'Car_park' && item.value == '1' && (
-          <View>
-            <MaterialCommunityIcons name="parking" size={30} color="black" />
-            <Text>{item.key}</Text>
-          </View>
-        )}
-        {item.key == 'MotorBike' && item.value == '1' && (
-          <View>
-            <MaterialCommunityIcons name="motorbike" size={30} color="black" />
-            <Text>{item.key}</Text>
-          </View>
-        )}
-        {item.key == 'Wifi' && item.value == '1' && (
-          <View>
-            <AntDesign name="wifi" size={30} color="black" />
-            <Text style={{marginLeft: 4}}>{item.key}</Text>
+        {item.value == '1' && (
+          <View style={styles.extensionItem}>
+            {item.key === 'Buffet' && (
+              <Ionicons name="restaurant" size={30} color="black" />
+            )}
+            {item.key === 'Car_park' && (
+              <MaterialCommunityIcons name="parking" size={30} color="black" />
+            )}
+            {item.key === 'MotorBike' && (
+              <MaterialCommunityIcons
+                name="motorbike"
+                size={30}
+                color="black"
+              />
+            )}
+            {item.key === 'Wifi' && (
+              <AntDesign name="wifi" size={30} color="black" />
+            )}
+            <Text style={styles.extensionText}>{item.key}</Text>
           </View>
         )}
       </View>
     );
   };
-
   const RoomItem = ({item}) => {
     return (
       <TouchableOpacity
@@ -578,8 +611,13 @@ const DetailHomestayScreen = ({navigation, route}) => {
           <FlatList
             data={dataArray}
             horizontal
-            contentContainerStyle={styles.flatListVertical}
-            renderItem={({item}) => <ShowExtension item={item} />}
+            contentContainerStyle={styles.flatListContainer}
+            renderItem={({item}) => (
+              <ShowExtension
+                item={item}
+                itemCount={dataArray.filter(i => i.value === '1').length}
+              />
+            )}
           />
           <View
             style={{
@@ -706,6 +744,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  flatListContainer: {
+    paddingVertical: 10,
+    flex: 1,
+    justifyContent: 'center',
   },
   headerImage: {
     height: 400,
@@ -920,7 +963,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#BCB6DC',
   },
-
+  extensionItem: {
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  extensionText: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',

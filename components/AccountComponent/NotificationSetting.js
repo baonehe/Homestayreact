@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View, Switch} from 'react-native';
 import React, {useState} from 'react';
-import colors from '../assets/consts/colors';
+import colors from '../../assets/consts/colors';
 
 export default function NotificationSetting() {
   const [isEnabled, setIsEnabled] = useState(false);

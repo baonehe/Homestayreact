@@ -1,30 +1,36 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
-  Button,
   StyleSheet,
   Text,
   View,
   Image,
   StatusBar,
-  FlatList,
   TouchableOpacity,
+  PermissionsAndroid,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import colors from '../assets/consts/colors';
-import sizes from '../assets/consts/sizes';
-import images from '../assets/images';
-import hotels from '../assets/data/hotels';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {SliderBox} from 'react-native-image-slider-box';
-import {ScrollView, TextInput} from 'react-native-gesture-handler';
+import {ScrollView, TextInput, FlatList} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
+import Geolocation from '@react-native-community/geolocation';
+import {useDispatch} from 'react-redux';
+import {setCurrentLocation} from '../redux/locationReducer';
 import Notification from './NotiScreen';
+import database from '@react-native-firebase/database';
+import utils from '../../assets/consts/utils';
+import colors from '../../assets/consts/colors';
+import sizes from '../../assets/consts/sizes';
+import images from '../../assets/images';
 
 const Home = ({navigation}) => {
-  const [selectedLocation, setSelectedLocation] = useState([]);
+  const [provinces, setProvinces] = useState([]); // Provinces list variable
+  const [selectedProvince, setSelectedProvince] = useState(''); // Choose province
+  const dispatch = useDispatch();
+  const [homestays, setHomestays] = useState([]);
 
+  const [searchText, setSearchText] = useState();
   const categoryIcons = [
     <Image name="Near you" source={images.nearyou} />,
     <Image name="Hourly" source={images.hourly} />,
@@ -33,6 +39,7 @@ const Home = ({navigation}) => {
     <Image name="Travel" source={images.travel} />,
     <Image name="Luxury" source={images.luxury} />,
   ];
+
   const ListCategories = () => {
     const [categoriesTime, setCategoriesTime] = useState([]);
     const [categoriesType, setCategoriesType] = useState([]);
@@ -50,7 +57,12 @@ const Home = ({navigation}) => {
             <TouchableOpacity
               key={index}
               style={styles.iconContainer}
-              onPress={() => navigation.navigate('SearchHomestay')}>
+              onPress={() =>
+                navigation.navigate('SearchHomestay', {
+                  type: icon.props.name,
+                  province: selectedProvince,
+                })
+              }>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
             </TouchableOpacity>
@@ -61,7 +73,12 @@ const Home = ({navigation}) => {
             <TouchableOpacity
               key={index}
               style={styles.iconContainer}
-              onPress={() => navigation.navigate('SearchHomestay')}>
+              onPress={() =>
+                navigation.navigate('SearchHomestay', {
+                  type: icon.props.name,
+                  province: selectedProvince,
+                })
+              }>
               {icon}
               <Text style={styles.iconName}>{icon.props.name}</Text>
             </TouchableOpacity>
@@ -70,7 +87,6 @@ const Home = ({navigation}) => {
       </View>
     );
   };
-
   const listImages = [
     images.image1,
     images.image2,
@@ -87,23 +103,164 @@ const Home = ({navigation}) => {
             <Text style={styles.itemRatingText}>5.0</Text>
             <Ionicons name="star" size={sizes.iconTiny} color={colors.yellow} />
           </View>
-          <Image style={styles.salesOffCardImage} source={hotel.image} />
+          <Image style={styles.salesOffCardImage} source={{uri: hotel.image}} />
           <View style={styles.itemInfor}>
-            <Text style={styles.itemInforName}>{hotel.name}</Text>
-            <Text style={styles.itemInforPrice}>{hotel.price}</Text>
+            <Text
+              style={styles.itemInforName}
+              ellipsizeMode="tail"
+              numberOfLines={1}>
+              {hotel.name}
+            </Text>
+            <Text style={styles.itemInforPrice}>{hotel.price}$</Text>
           </View>
           <View style={styles.itemLocation}>
-            <Text style={styles.itemLocationText}>{hotel.location}</Text>
             <Ionicons
               name="location-sharp"
               size={sizes.iconTiny}
               color={colors.gray}
             />
+            <Text
+              style={styles.itemLocationText}
+              ellipsizeMode="tail"
+              numberOfLines={2}>
+              {hotel.location}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
+
+  // Follow and update current location
+  const getMyLocation = useCallback(() => {
+    const handleLocation = position => {
+      const {latitude, longitude} = position.coords;
+      dispatch(setCurrentLocation(position.coords));
+
+      const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${utils.mapKey}`;
+
+      fetch(geocodingUrl)
+        .then(response => response.json())
+        .then(data => {
+          const results = data.results;
+          if (results.length > 0) {
+            for (const component of results[0].address_components) {
+              if (component.types.includes('administrative_area_level_1')) {
+                const currentProvince = component.long_name;
+                console.log('Tỉnh/Thành phố hiện tại:', currentProvince);
+
+                database()
+                  .ref('provinces')
+                  .orderByChild('name')
+                  .equalTo(currentProvince)
+                  .once('value', snapshot => {
+                    if (snapshot.exists()) {
+                      console.log(
+                        'Tìm thấy trùng khớp trong Firebase Realtime Database',
+                      );
+                      setSelectedProvince(currentProvince);
+                    } else {
+                      console.log(
+                        'Không tìm thấy trùng khớp trong Firebase Realtime Database',
+                      );
+                    }
+                  });
+                return currentProvince;
+              }
+            }
+          }
+          console.log('Không xác định được tỉnh/ thành phố.');
+          return null;
+        })
+        .catch(error => {
+          console.log('Lỗi khi lấy địa chỉ từ tọa độ:', error);
+          return null;
+        });
+    };
+
+    const handleError = error => {
+      console.log('Error getting current location:', error);
+    };
+
+    const options = {
+      enableHighAccuracy: true,
+      distanceFilter: 10,
+    };
+
+    const watchId = Geolocation.watchPosition(
+      handleLocation,
+      handleError,
+      options,
+    );
+
+    return () => {
+      Geolocation.clearWatch(watchId);
+    };
+  }, [dispatch]);
+
+  // Function location permission and get current location
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'App needs access to your location.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        getMyLocation();
+      } else {
+        console.log('Location permission denied');
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  // Call getLocation function
+  useEffect(() => {
+    getMyLocation();
+  }, [getMyLocation]);
+
+  // Request location permission and fetch provinces list
+  useEffect(() => {
+    requestLocationPermission();
+
+    const fetchProvinces = async () => {
+      try {
+        const snapshot = await database().ref('provinces').once('value');
+        const data = snapshot.val();
+
+        if (data) {
+          const provincesList = Object.values(data).map(
+            province => province.name,
+          );
+          const sortedProvince = provincesList.sort((a, b) =>
+            a.localeCompare(b),
+          );
+          setProvinces(sortedProvince);
+          console.log(sortedProvince);
+          // setSelectedLocation(sortedProvince[0] || '');
+        }
+      } catch (error) {
+        console.log('Error fetching provinces:', error);
+      }
+    };
+    const readData = async () => {
+      const snapshot = await database().ref('/homestays').once('value');
+      if (snapshot && snapshot.val) {
+        const data = snapshot.val();
+        const dataList = Object.values(data);
+        setHomestays(dataList);
+      }
+    };
+    fetchProvinces();
+    readData();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -128,15 +285,21 @@ const Home = ({navigation}) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* SearchBar */}
         <View style={styles.searchBar}>
-          <Ionicons name="search-outline" style={styles.searchIcon} />
+          <TouchableOpacity
+            style={styles.searchBtn}
+            onPress={() =>
+              navigation.navigate('SearchHomestay', {searchText: searchText})
+            }>
+            <Ionicons name="search-outline" style={styles.searchIcon} />
+          </TouchableOpacity>
           <TextInput
             autoCapitalize="none"
             autoCorrect={false}
             style={styles.searchInput}
             placeholder="Search for destinations, hotels, ..."
             placeholderTextColor="#333333"
-            // value={searchTerm}
-            // onChangeText={onSearchTermChange}
+            value={searchText}
+            onChangeText={text => setSearchText(text)}
             // onEndEditing={onSearchTermSubmit}
           />
         </View>
@@ -151,16 +314,18 @@ const Home = ({navigation}) => {
           />
           <Picker
             style={styles.locationPicker}
-            selectedValue={selectedLocation}
+            selectedValue={selectedProvince}
             onValueChange={(itemValue, itemIndex) =>
-              setSelectedLocation(itemValue)
+              setSelectedProvince(itemValue)
             }>
-            <Picker.Item style={styles.pickerItem} label="Hà Nội" value="HN" />
-            <Picker.Item
-              style={styles.pickerItem}
-              label="Hồ Chí Minh"
-              value="HCM"
-            />
+            {provinces.map((province, index) => (
+              <Picker.Item
+                key={index}
+                style={styles.pickerItem}
+                label={province}
+                value={province}
+              />
+            ))}
           </Picker>
         </View>
 
@@ -181,7 +346,7 @@ const Home = ({navigation}) => {
           paginationBoxStyle={styles.boxSlider}
           ImageComponentStyle={styles.boxImageSlider}
           onCurrentImagePressed={index => console.log(`image ${index} pressed`)}
-          currentImageEmitter={index => console.log(`current pos is: ${index}`)}
+          // currentImageEmitter={index => console.log(`current pos is: ${index}`)}
         />
 
         {/* SalesOff */}
@@ -190,7 +355,7 @@ const Home = ({navigation}) => {
           <Text>Show all</Text>
         </View>
         <FlatList
-          data={hotels}
+          data={homestays}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.flatList}
@@ -243,11 +408,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
   },
+  searchBtn: {
+    justifyContent: 'center',
+  },
   searchIcon: {
     color: colors.lightblack,
     fontSize: sizes.iconLarge,
     alignSelf: 'center',
-    marginHorizontal: 10,
+    marginLeft: 10,
   },
 
   //Location
@@ -368,7 +536,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
     flexDirection: 'row',
   },
-  itemLocationText: {},
+  itemLocationText: {
+    width: '90%',
+  },
   itemInfor: {
     paddingVertical: 5,
     paddingHorizontal: 10,

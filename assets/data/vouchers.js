@@ -8,6 +8,7 @@ const vouchers = [
         date_end: '29/04/2023',
         quantity: 1,
         notice: 'Áp dụng tất cả các hình thức thanh toán',
+        image: require('../images/coupon.jpg'),
         details:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit',
     },
@@ -20,6 +21,7 @@ const vouchers = [
         date_end: '01/06/2023',
         quantity: 1,
         notice: 'Áp dụng thanh toán online',
+        image: require('../images/coupon.jpg'),
         details:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit',
     },
@@ -32,6 +34,7 @@ const vouchers = [
         date_end: '20/04/2023',
         quantity: 2,
         notice: 'Áp dụng thanh toán trực tiếp',
+        image: require('../images/coupon.jpg'),
         details:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit',
     },
@@ -44,6 +47,7 @@ const vouchers = [
         date_end: '21/04/2023',
         quantity: 1,
         notice: 'Áp dụng thanh toán online',
+        image: require('../images/coupon.jpg'),
         details:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit',
     },
@@ -56,6 +60,35 @@ const vouchers = [
         date_end: '22/04/2023',
         quantity: 1,
         notice: 'Áp dụng tất cả các hình thức thanh toán',
+        image: require('../images/coupon.jpg'),
+        details:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit',
+    },
+    {
+        id: '6',
+        id_hotel: '1',
+        name: 'Silver Hotel',
+        title: 'Ưu đãi cực sốc mừng khai trương nè',
+        sale_off:'50%',
+        date_start: '05/04/2023',
+        date_end: '28/04/2023',
+        quantity: 1,
+        notice: 'Áp dụng tất cả các hình thức thanh toán',
+        image: require('../images/coupon.jpg'),
+        details:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit',
+    },
+    {
+        id: '7',
+        id_hotel: '2',
+        name: 'Bring Hotel',
+        title: 'Ưu đãi cực sốc mừng khai trương nè',
+        sale_off:'55%',
+        date_start: '06/04/2023',
+        date_end: '29/04/2023',
+        quantity: 1,
+        notice: 'Áp dụng tất cả các hình thức thanh toán',
+        image: require('../images/coupon.jpg'),
         details:
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consequat nisl vel pretium lectus quam id leo. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Justo laoreet sit amet cursus sit',
     },

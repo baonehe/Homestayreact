@@ -1,19 +1,20 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {BottomFabBar} from 'rn-wave-bottom-bar';
 import Icon from 'react-native-vector-icons/AntDesign';
-import Home from '../components/HomeScreen';
-import Suggest from '../components/SuggestScreen';
-import FastBooking from '../components/FastBookingScreen';
-import Rewards from '../components/RewardsScreen';
-import Account from '../components/AccountScreen';
+import Home from '../components/ExploreComponent/HomeScreen';
+import Suggest from '../components/SuggestionComponent/SuggestScreen';
+import FastBooking from '../components/FastBookingComponent/FastBookingScreen';
+import Rewards from '../components/RewardComponent/RewardsScreen';
+import Account from '../components/AccountComponent/AccountScreen';
 import colors from '../assets/consts/colors';
 import sizes from '../assets/consts/sizes';
+import {presets} from '../babel.config';
 
 const Bottom = createBottomTabNavigator();
 
-function BottomTabs() {
+function BottomTabs(props) {
   return (
     <Bottom.Navigator
       screenOptions={{
@@ -93,6 +94,7 @@ function BottomTabs() {
       />
       <Bottom.Screen
         name="Account"
+        initialParams={{email: props.email}}
         component={Account}
         options={{
           tabBarIcon: ({focused}) => (
@@ -109,8 +111,9 @@ function BottomTabs() {
   );
 }
 
-const BottomTabsNavigator = () => {
-  return <BottomTabs />;
+const BottomTabsNavigator = ({route}) => {
+  const {email} = route.params;
+  return <BottomTabs email={email} />;
 };
 
 const styles = StyleSheet.create({

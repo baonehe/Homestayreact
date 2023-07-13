@@ -1,6 +1,6 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {NavigationContainer} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 import Notification from '../components/ExploreComponent/NotiScreen';
 import Login from '../components/LoginComponent/SignInScreen';
 import SignUp from '../components/LoginComponent/SignUpScreen';
@@ -15,6 +15,7 @@ import Information from '../components/AccountComponent/Information';
 import FastBookingDetailHotel from '../components/FastBookingComponent/FastBookingDetailHotelScreen';
 import FavoritesScreen from '../components/FavoritesScreen';
 import History from '../components/AccountComponent/History';
+import PayScreen from '../components/ExploreComponent/PayScreen'
 import ForgotPasswordScreen from '../components/LoginComponent/ForgotPasswordScreen';
 
 const Stack = createNativeStackNavigator();
@@ -29,12 +30,12 @@ function StackTabs() {
       <Stack.Screen
         name="Login"
         component={Login}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="SignUp"
         component={SignUp}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="ForgotPasswordScreen"
@@ -44,47 +45,52 @@ function StackTabs() {
       <Stack.Screen
         name="Information"
         component={Information}
-        options={{headerShown: true}}
+        options={{ headerShown: true }}
       />
       <Stack.Screen
         name="BottomTabsNavigator"
         component={BottomTabsNavigator}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="TopTabsNavigator"
         component={TopTabsNavigator}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Notification"
         component={Notification}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="DetailHomestay"
         component={DetailHomestay}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="SearchHomestay"
         component={SearchHomestay}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="NotificationSetting"
         component={NotificationSetting}
-        options={{headerShown: true}}
+        options={{ headerShown: true }}
       />
       <Stack.Screen
         name="FastBookingDetailHotel"
         component={FastBookingDetailHotel}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="DetailsReward"
         component={DetailsReward}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Payment"
+        component={PayScreen}
+        options={{ headerShown: true }}
       />
       <Stack.Screen name="FavoritesScreen" component={FavoritesScreen} />
       <Stack.Screen name="HistoryScreen" component={History} />

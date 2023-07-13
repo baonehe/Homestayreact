@@ -15,6 +15,8 @@ import colors from '../../assets/consts/colors';
 import images from '../../assets/images';
 import {ScrollView} from 'react-native-gesture-handler';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const FastBooking = ({navigation}) => {
   const [roomTypes, setRoomTypes] = useState([]);
   const [isFiltered, setIsFiltered] = useState(false);
@@ -28,10 +30,14 @@ const FastBooking = ({navigation}) => {
   const [roomTypesSearch, setRoomTypesSearch] = useState([]);
   const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
 
+
   // hàm xử lý sự kiện khi nhấn vào nút "Add Homestay" để mở bottom sheet:
   const handleAddHomestay = () => {
+    setSearchText('');
+    setFilteredHomestays([]);
     bottomSheetRef.current?.expand();
   };
+
   // hàm handleSearch để xử lý tìm kiếm homestays dựa trên tên:
   const handleSearch = () => {
     const filteredHomestays = homestays.filter(homestay =>
@@ -39,27 +45,42 @@ const FastBooking = ({navigation}) => {
     );
     setFilteredHomestays(filteredHomestays);
   };
+
   // hàm handleHomestayPress để xử lý khi bấm vào một homestay trong danh sách:
   const handleHomestayPress = homestayId => {
     setSelectedHomestayId(homestayId);
   };
+
 
   const updateRoomTypes = newRoomTypes => {
     const updatedRoomTypes = newRoomTypes.map(roomType => {
       const homestay = homestays.find(
         homestay => homestay.homestay_id === roomType.homestay_id,
       );
-
+  
       return {
         ...roomType,
         homestayName: homestay ? homestay.name : 'Unknown',
+        homestayLocation: homestay ? homestay.location : 'Unknown',
         homestayImage: homestay ? homestay.image : '',
+        rating: homestay ? homestay.rating : '',
+        ratingvote: homestay ? homestay.ratingvote : '',
       };
     });
-
+  
     setRoomTypes(updatedRoomTypes);
     setSelectedRoomTypes([]);
+  
+    // Lưu trữ dữ liệu roomtypes vào AsyncStorage
+    AsyncStorage.setItem('roomtypes', JSON.stringify(updatedRoomTypes))
+      .then(() => {
+        console.log('Room types updated in AsyncStorage');
+      })
+      .catch(error => {
+        console.log('Error updating room types in AsyncStorage:', error);
+      });
   };
+  
 
   const handleRoomTypePress = roomTypeId => {
     const selectedRoomType = roomTypesSearch.find(
@@ -68,60 +89,86 @@ const FastBooking = ({navigation}) => {
     const homestay = homestays.find(
       homestay => homestay.homestay_id === selectedHomestayId,
     );
-
+  
     const updatedRoomType = {
       ...selectedRoomType,
       homestayName: homestay ? homestay.name : 'Unknown',
+      homestayLocation: homestay ? homestay.location : 'Unknown',
       homestayImage: homestay ? homestay.image : '',
+      rating: homestay ? homestay.rating : '',
+      ratingvote: homestay ? homestay.ratingvote : '',
     };
-
+  
     setSelectedRoomTypes(prevSelectedRoomTypes => [
       ...prevSelectedRoomTypes,
       updatedRoomType,
     ]);
     bottomSheetRef.current?.close();
     setRoomTypes(prevRoomTypes => [...prevRoomTypes, updatedRoomType]);
+  
+    // Lưu trữ dữ liệu roomtypes vào AsyncStorage
+    AsyncStorage.setItem(
+      'roomtypes',
+      JSON.stringify([...roomTypes, updatedRoomType])
+    )
+      .then(() => {
+        console.log('Room types updated in AsyncStorage');
+      })
+      .catch(error => {
+        console.log('Error updating room types in AsyncStorage:', error);
+      });
   };
+
+  useEffect(() => {
+    const fetchHomestays = async () => {
+      try {
+        const homestaysData = await AsyncStorage.getItem('homestays');
+        if (homestaysData) {
+          const homestaysArray = JSON.parse(homestaysData);
+          setHomestays(homestaysArray);
+          setFilteredHomestays(homestaysArray);
+        } else {
+          const homestaysSnapshot = await database()
+            .ref('homestays')
+            .once('value');
+          const homestaysData = homestaysSnapshot.val();
+          if (homestaysData) {
+            const homestaysArray = Object.values(homestaysData);
+            setHomestays(homestaysArray);
+            setFilteredHomestays(homestaysArray);
+  
+            // Lưu trữ dữ liệu homestays vào AsyncStorage
+            AsyncStorage.setItem('homestays', JSON.stringify(homestaysArray))
+              .then(() => {
+                console.log('Homestays updated in AsyncStorage');
+              })
+              .catch(error => {
+                console.log('Error updating homestays in AsyncStorage:', error);
+              });
+          }
+        }
+      } catch (error) {
+        console.log('Error fetching homestays:', error);
+      }
+    };
+  
+    fetchHomestays();
+  }, []);
 
   useEffect(() => {
     const fetchRoomTypes = async () => {
       try {
-        const roomTypesSnapshot = await database()
-          .ref('roomtypes')
-          .once('value');
-        const roomTypesData = roomTypesSnapshot.val();
-        const roomTypes = Object.values(roomTypesData);
-
-        const homestaySnapshot = await database()
-          .ref('homestays')
-          .once('value');
-        const homestaysData = homestaySnapshot.val();
-
-        const roomTypesWithHomestay = roomTypes
-          .filter(roomType =>
-            [2, 4, 8, 10, 30, 20, 22].includes(roomType.roomtype_id),
-          ) // Lọc những loại phòng có roomtype_id bằng 2
-          .map(roomType => {
-            const homestay = Object.values(homestaysData).find(
-              homestay => homestay.homestay_id === roomType.homestay_id,
-            );
-            const homestayName = homestay ? homestay.name : 'Unknown';
-            const homestayImage = homestay ? homestay.image : '';
-
-            return {
-              ...roomType,
-              homestayName: homestayName,
-              homestayImage: homestayImage,
-            };
-          });
-
-        setRoomTypes(roomTypesWithHomestay);
-        setIsFiltered(true);
+        const roomTypesData = await AsyncStorage.getItem('roomtypes');
+        if (roomTypesData) {
+          const roomTypesArray = JSON.parse(roomTypesData);
+          setRoomTypes(roomTypesArray);
+          setIsFiltered(true);
+        }
       } catch (error) {
         console.log('Error fetching room types:', error);
       }
     };
-
+  
     if (!isFiltered) {
       fetchRoomTypes();
     }
@@ -144,26 +191,6 @@ const FastBooking = ({navigation}) => {
     };
 
     fetchRoomTypesSearch();
-  }, []);
-
-  useEffect(() => {
-    const fetchHomestays = async () => {
-      try {
-        const homestaysSnapshot = await database()
-          .ref('homestays')
-          .once('value');
-        const homestaysData = homestaysSnapshot.val();
-        if (homestaysData) {
-          const homestaysArray = Object.values(homestaysData);
-          setHomestays(homestaysArray);
-          setFilteredHomestays(homestaysArray);
-        }
-      } catch (error) {
-        console.log('Error fetching homestays:', error);
-      }
-    };
-
-    fetchHomestays();
   }, []);
 
   const renderItem = ({item}) => (
@@ -244,7 +271,7 @@ const FastBooking = ({navigation}) => {
 
           <ScrollView style={{marginBottom: 200}}>
             <FlatList
-              data={filteredHomestays}
+               data={searchText !== '' && filteredHomestays.length > 0 ? filteredHomestays : homestays}
               renderItem={({item}) => (
                 <TouchableOpacity
                   onPress={() => handleHomestayPress(item.homestay_id)}>

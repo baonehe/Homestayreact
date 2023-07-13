@@ -7,9 +7,9 @@ import {
   Alert,
   Modal,
 } from 'react-native';
-import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import {SliderBox} from 'react-native-image-slider-box';
+import { SliderBox } from 'react-native-image-slider-box';
 import {
   GestureHandlerRootView,
   ScrollView,
@@ -21,11 +21,11 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import {Rating} from 'react-native-ratings';
-import {useSelector, useDispatch} from 'react-redux';
+import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { Rating } from 'react-native-ratings';
+import { useSelector, useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {addHours, format, parse, isWithinInterval, isBefore} from 'date-fns';
+import { addHours, format, parse, isWithinInterval, isBefore } from 'date-fns';
 import TimestampPicker from '../SupComponent/TimestampPicker';
 import {
   setTimeType,
@@ -39,7 +39,7 @@ import {
   getTimeframeList,
 } from '../redux/timestampReducers';
 import FavoriteButton from '../FavoriteButton';
-import {onDisplayNotification} from '../NotificationComponent/PushNotiHelper';
+import { onDisplayNotification } from '../NotificationComponent/PushNotiHelper';
 import database from '@react-native-firebase/database';
 import firestore from '@react-native-firebase/firestore';
 import colors from '../../assets/consts/colors';
@@ -47,7 +47,7 @@ import sizes from '../../assets/consts/sizes';
 import images from '../../assets/images';
 import utils from '../../assets/consts/utils';
 
-const DetailHomestayScreen = ({navigation, route}) => {
+const DetailHomestayScreen = ({ navigation, route }) => {
   const homestay = route.params;
   const timeType = useSelector(state => state.timestamp.timeType);
   const selector = useSelector(state => state.timestamp);
@@ -97,98 +97,93 @@ const DetailHomestayScreen = ({navigation, route}) => {
     console.log('handleSheetChanges', index);
   }, []);
 
-  const handleBookHomestay = useCallback(
-    roomType => {
-      if (isDataLoaded) {
-        console.log('room', rooms);
-
-        const roomList = rooms[roomType.roomtype_id];
-
-        if (roomList && roomList.length > 0) {
-          // Phòng thuộc roomtype_id tồn tại
-          const firstRoom = roomList[0];
-          setCheck(true);
-          setText('Confirm Booking');
-          setRoomNumber(firstRoom.room_number);
-          setType(roomType.room_type);
-          if (timeType === 'Hourly') {
-            setPrice(roomType.price_per_hour * hourlyDuration);
-          } else if (timeType === 'Overnight') {
-            setPrice(roomType.price_per_night);
-          } else {
-            setPrice(roomType.price_per_night * dailyDuration);
-          }
-
-          setChooseRoom(firstRoom);
-          setNotiModal(true);
-        } else {
-          // Không có phòng thuộc roomtype_id
-          setCheck(false);
-          setText('There are currently no available rooms of this type');
-          setNotiModal(true);
-        }
-      } else {
-        // Hiển thị thông báo hoặc xử lý khác khi dữ liệu chưa sẵn sàng
-        console.log('Data is loading...');
-      }
-    },
-    [dailyDuration, hourlyDuration, isDataLoaded, rooms, timeType],
-  );
-
-  function generateBookingId() {
-    const length = 10; // Độ dài của bookingId
-    let bookingId = '';
-
-    for (let i = 0; i < length; i++) {
-      const randomDigit = Math.floor(Math.random() * 10); // Sinh ra một số ngẫu nhiên từ 0 đến 9
-      bookingId += randomDigit.toString(); // Chuyển đổi số thành chuỗi và thêm vào bookingId
+  const getData = (firstRoom, user_id,timeType, roomType, price) => {
+    try {
+      const data = {
+        homestay_id: homestay.homestay_id,
+        room_id: firstRoom.room_id,
+        room_number: firstRoom.room_number,
+        time_type: timeType,
+        room_type: roomType,
+        user_id: user_id,
+        check_in: selector.checkIn,
+        check_out: selector.checkOut,
+        price: price,
+        status: 'pending',
+      };
+      return data;
+    } catch (error) {
+      throw error;
     }
-
-    return bookingId;
-  }
-
-  const bookHomestay = async () => {
-    const booking_id = generateBookingId();
-    const newBooking = {
-      booking_id: booking_id,
-      homestay_id: homestay.homestay_id,
-      room_id: chooseRoom.room_id,
-      user_id: await AsyncStorage.getItem('userId'),
-      check_in: selector.checkIn,
-      check_out: selector.checkOut,
-      price: price,
-      status: 'booked',
-    };
-    setNotiModal(!notiModal);
-    database()
-      .ref('booking')
-      .push(newBooking)
-      .then(() => {
-        console.log('Booking added to the database');
-        fetchRooms();
-      })
-      .catch(error => {
-        console.log('Error adding booking to the database: ', error);
-        // Xử lý lỗi nếu có
-      });
-    firestore()
-      .collection('Booking')
-      .add(newBooking)
-      .then(() => {
-        console.log('Booking added to the database');
-        fetchRooms();
-      })
-      .catch(error => {
-        console.log('Error adding booking to the database: ', error);
-        // Xử lý lỗi nếu có
-      });
-    onDisplayNotification({
-      title: 'Stelio Booking',
-      body: `Your booking ${booking_id} is confirmed.`,
-    });
   };
+  
+  const handleBookHomestay = useCallback(async (roomType) => {
+    const roomList = rooms[roomType.roomtype_id];
+    const firstRoom = roomList[0];
+    let price;
+    const user_id = await AsyncStorage.getItem('userId');
+  
+    if (roomType.timetype.includes(timeType)) {
+      if (timeType === 'Hourly') {
+        price = roomType.price_per_hour * hourlyDuration;
+      } else if (timeType === 'Overnight') {
+        price = roomType.price_per_night;
+      } else {
+        price = roomType.price_per_night * dailyDuration;
+      }
+    }
+    console.log(price);
+    try {
+      const data = await getData(firstRoom, user_id, timeType, roomType.room_type, price);
+      navigation.navigate('Payment', data);
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  }, [dailyDuration, getData, hourlyDuration, navigation, rooms, timeType]);
 
-  const ShowExtension = ({item}) => {
+
+  // const bookHomestay = async () => {
+  //   const booking_id = generateBookingId();
+  //   const newBooking = {
+  //     booking_id: booking_id,
+  //     homestay_id: homestay.homestay_id,
+  //     room_id: chooseRoom.room_id,
+  //     user_id: await AsyncStorage.getItem('userId'),
+  //     check_in: selector.checkIn,
+  //     check_out: selector.checkOut,
+  //     price: price,
+  //     status: 'booked',
+  //   };
+  //   setNotiModal(!notiModal);
+  //   database()
+  //     .ref('booking')
+  //     .push(newBooking)
+  //     .then(() => {
+  //       console.log('Booking added to the database');
+  //       fetchRooms();
+  //     })
+  //     .catch(error => {
+  //       console.log('Error adding booking to the database: ', error);
+  //       // Xử lý lỗi nếu có
+  //     });
+  //   firestore()
+  //     .collection('Booking')
+  //     .add(newBooking)
+  //     .then(() => {
+  //       console.log('Booking added to the database');
+  //       fetchRooms();
+  //     })
+  //     .catch(error => {
+  //       console.log('Error adding booking to the database: ', error);
+  //       // Xử lý lỗi nếu có
+  //     });
+  //   onDisplayNotification({
+  //     title: 'Stelio Booking',
+  //     body: `Your booking ${booking_id} is confirmed.`,
+  //   });
+  // };
+
+  const ShowExtension = ({ item }) => {
     return (
       <View
         style={{
@@ -217,21 +212,21 @@ const DetailHomestayScreen = ({navigation, route}) => {
         {item.key == 'Wifi' && item.value == '1' && (
           <View>
             <AntDesign name="wifi" size={30} color="black" />
-            <Text style={{marginLeft: 4}}>{item.key}</Text>
+            <Text style={{ marginLeft: 4 }}>{item.key}</Text>
           </View>
         )}
       </View>
     );
   };
 
-  const RoomItem = ({item}) => {
+  const RoomItem = ({ item }) => {
     const hasRooms = rooms[item.roomtype_id];
     const isAvailable = hasRooms !== undefined && hasRooms.length > 0;
     if (isAvailable) {
       return (
         <TouchableOpacity
           style={styles.roomCard}
-          onPress={() => navigation.navigate('FastBookingDetailHotel', {item})}>
+          onPress={() => navigation.navigate('FastBookingDetailHotel', { item })}>
           <SliderBox
             ImageComponent={FastImage}
             images={listImages}
@@ -259,8 +254,8 @@ const DetailHomestayScreen = ({navigation, route}) => {
                       {timeType === 'Hourly'
                         ? item.price_per_hour * hourlyDuration
                         : timeType === 'Overnight'
-                        ? item.price_per_night
-                        : item.price_per_night * dailyDuration}
+                          ? item.price_per_night
+                          : item.price_per_night * dailyDuration}
                       $
                     </Text>
                   ) : null}
@@ -322,10 +317,10 @@ const DetailHomestayScreen = ({navigation, route}) => {
         <Text
           style={[
             styles.loadText,
-            {fontSize: 16, marginTop: 10, marginBottom: 0},
+            { fontSize: 16, marginTop: 10, marginBottom: 0 },
           ]}>
           No rooms for type:{' '}
-          <Text style={[styles.roomTypeText, {fontSize: 14}]}>
+          <Text style={[styles.roomTypeText, { fontSize: 14 }]}>
             {item.room_type}
           </Text>{' '}
           right now.
@@ -347,7 +342,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
     const formattedCheckIn = `${itemString}, ${checkInDate}`;
     const formattedCheckOut = `${formattedCheckOutTime}, ${checkOutDate}`;
     dispatch(setTimeType('Hourly'));
-    dispatch(setCheckInTime({checkInTime: itemString, tabName: 'hourly'}));
+    dispatch(setCheckInTime({ checkInTime: itemString, tabName: 'hourly' }));
     dispatch(
       setCheckOutTime({
         checkOutTime: formattedCheckOutTime,
@@ -360,8 +355,8 @@ const DetailHomestayScreen = ({navigation, route}) => {
         tabName: 'hourly',
       }),
     );
-    dispatch(setCheckInTab({checkIn: formattedCheckIn, tabName: 'hourly'}));
-    dispatch(setCheckOutTab({checkOut: formattedCheckOut, tabName: 'hourly'}));
+    dispatch(setCheckInTab({ checkIn: formattedCheckIn, tabName: 'hourly' }));
+    dispatch(setCheckOutTab({ checkOut: formattedCheckOut, tabName: 'hourly' }));
     dispatch(setCheckIn(formattedCheckIn));
     dispatch(setCheckOut(formattedCheckOut));
   }, []);
@@ -430,6 +425,12 @@ const DetailHomestayScreen = ({navigation, route}) => {
     fetchRooms();
   }, [fetchRooms]);
 
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      fetchRooms();
+    });
+  }, [navigation, fetchRooms]);
+  
   const isRoomAvailable = async (room, checkin, checkout) => {
     const snapshot = await database().ref('booking').once('value');
     if (snapshot && snapshot.val) {
@@ -497,7 +498,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
     <GestureHandlerRootView contentContainerStyle={styles.container}>
       <ScrollView showsVerticalScrollIndicator={true}>
         <ImageBackground
-          source={{uri: homestay.image}}
+          source={{ uri: homestay.image }}
           style={styles.headerImage}>
           <View style={styles.header}>
             <Icon
@@ -514,7 +515,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
           </View>
         </ImageBackground>
         <View>
-          <Modal
+          {/* <Modal
             animationType="slide"
             transparent={true}
             visible={notiModal}
@@ -561,7 +562,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
                 )}
               </View>
             </View>
-          </Modal>
+          </Modal> */}
 
           <View style={styles.iconContainer}>
             <FavoriteButton item={homestay} />
@@ -576,7 +577,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
               }}>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <Rating
                   imageSize={20}
                   readonly
@@ -592,12 +593,12 @@ const DetailHomestayScreen = ({navigation, route}) => {
                   {homestay.rating}
                 </Text>
               </View>
-              <Text style={{fontSize: 13, color: colors.gray}}>
+              <Text style={{ fontSize: 13, color: colors.gray }}>
                 {homestay.ratingvote} reviews
               </Text>
             </View>
-            <View style={{marginTop: 15}}>
-              <Text style={{lineHeight: 20, color: colors.gray}}>
+            <View style={{ marginTop: 15 }}>
+              <Text style={{ lineHeight: 20, color: colors.gray }}>
                 {homestay.details}
               </Text>
             </View>
@@ -606,7 +607,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
             data={dataArray}
             horizontal
             contentContainerStyle={styles.flatListVertical}
-            renderItem={({item}) => <ShowExtension item={item} />}
+            renderItem={({ item }) => <ShowExtension item={item} />}
           />
           <View
             style={{
@@ -616,7 +617,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
               paddingLeft: 20,
               alignItems: 'center',
             }}>
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>Price from</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Price from</Text>
             <View style={styles.priceTag}>
               <Text
                 style={{
@@ -643,29 +644,29 @@ const DetailHomestayScreen = ({navigation, route}) => {
               style={styles.chooseBtn}
               onPress={handlePresentModalPress}>
               {timeType === 'Hourly' ? (
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <MaterialCommunityIcons
                     name="timer-sand"
                     size={24}
-                    style={{color: colors.black, marginLeft: 8}}
+                    style={{ color: colors.black, marginLeft: 8 }}
                   />
                   <Text style={styles.timeText}>{hourlyDuration} hour(s) </Text>
                 </View>
               ) : timeType === 'Overnight' ? (
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <FontAwesome
                     name="moon-o"
                     size={24}
-                    style={{color: colors.black, marginLeft: 8}}
+                    style={{ color: colors.black, marginLeft: 8 }}
                   />
                   <Text style={styles.timeText}>{ov9Duration} night </Text>
                 </View>
               ) : (
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <FontAwesome
                     name="building-o"
                     size={24}
-                    style={{color: colors.black, marginLeft: 8}}
+                    style={{ color: colors.black, marginLeft: 8 }}
                   />
                   <Text style={styles.timeText}>{dailyDuration} day(s) </Text>
                 </View>
@@ -684,7 +685,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
               <AntDesign
                 name="arrowright"
                 size={18}
-                style={{color: colors.black, marginHorizontal: 4}}
+                style={{ color: colors.black, marginHorizontal: 4 }}
               />
               <Text style={styles.timeText}>
                 {utils.formatDateTime(checkOut)}
@@ -696,7 +697,7 @@ const DetailHomestayScreen = ({navigation, route}) => {
               data={roomTypes}
               vertical
               contentContainerStyle={styles.flatList}
-              renderItem={({item}) => <RoomItem item={item} />}
+              renderItem={({ item }) => <RoomItem item={item} />}
             />
           ) : (
             <Text style={styles.loadText}>Loading...</Text>

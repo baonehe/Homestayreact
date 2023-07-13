@@ -13,7 +13,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import database from '@react-native-firebase/database';
 import colors from '../../assets/consts/colors';
 import images from '../../assets/images';
-import {ScrollView} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-virtualized-view';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -29,7 +29,6 @@ const FastBooking = ({navigation}) => {
   const [selectedHomestayId, setSelectedHomestayId] = useState(null);
   const [roomTypesSearch, setRoomTypesSearch] = useState([]);
   const [selectedRoomTypes, setSelectedRoomTypes] = useState([]);
-
 
   // hàm xử lý sự kiện khi nhấn vào nút "Add Homestay" để mở bottom sheet:
   const handleAddHomestay = () => {
@@ -51,13 +50,12 @@ const FastBooking = ({navigation}) => {
     setSelectedHomestayId(homestayId);
   };
 
-
   const updateRoomTypes = newRoomTypes => {
     const updatedRoomTypes = newRoomTypes.map(roomType => {
       const homestay = homestays.find(
         homestay => homestay.homestay_id === roomType.homestay_id,
       );
-  
+
       return {
         ...roomType,
         homestayName: homestay ? homestay.name : 'Unknown',
@@ -67,10 +65,10 @@ const FastBooking = ({navigation}) => {
         ratingvote: homestay ? homestay.ratingvote : '',
       };
     });
-  
+
     setRoomTypes(updatedRoomTypes);
     setSelectedRoomTypes([]);
-  
+
     // Lưu trữ dữ liệu roomtypes vào AsyncStorage
     AsyncStorage.setItem('roomtypes', JSON.stringify(updatedRoomTypes))
       .then(() => {
@@ -80,7 +78,6 @@ const FastBooking = ({navigation}) => {
         console.log('Error updating room types in AsyncStorage:', error);
       });
   };
-  
 
   const handleRoomTypePress = roomTypeId => {
     const selectedRoomType = roomTypesSearch.find(
@@ -89,7 +86,7 @@ const FastBooking = ({navigation}) => {
     const homestay = homestays.find(
       homestay => homestay.homestay_id === selectedHomestayId,
     );
-  
+
     const updatedRoomType = {
       ...selectedRoomType,
       homestayName: homestay ? homestay.name : 'Unknown',
@@ -98,18 +95,18 @@ const FastBooking = ({navigation}) => {
       rating: homestay ? homestay.rating : '',
       ratingvote: homestay ? homestay.ratingvote : '',
     };
-  
+
     setSelectedRoomTypes(prevSelectedRoomTypes => [
       ...prevSelectedRoomTypes,
       updatedRoomType,
     ]);
     bottomSheetRef.current?.close();
     setRoomTypes(prevRoomTypes => [...prevRoomTypes, updatedRoomType]);
-  
+
     // Lưu trữ dữ liệu roomtypes vào AsyncStorage
     AsyncStorage.setItem(
       'roomtypes',
-      JSON.stringify([...roomTypes, updatedRoomType])
+      JSON.stringify([...roomTypes, updatedRoomType]),
     )
       .then(() => {
         console.log('Room types updated in AsyncStorage');
@@ -136,7 +133,7 @@ const FastBooking = ({navigation}) => {
             const homestaysArray = Object.values(homestaysData);
             setHomestays(homestaysArray);
             setFilteredHomestays(homestaysArray);
-  
+
             // Lưu trữ dữ liệu homestays vào AsyncStorage
             AsyncStorage.setItem('homestays', JSON.stringify(homestaysArray))
               .then(() => {
@@ -151,7 +148,7 @@ const FastBooking = ({navigation}) => {
         console.log('Error fetching homestays:', error);
       }
     };
-  
+
     fetchHomestays();
   }, []);
 
@@ -168,7 +165,7 @@ const FastBooking = ({navigation}) => {
         console.log('Error fetching room types:', error);
       }
     };
-  
+
     if (!isFiltered) {
       fetchRoomTypes();
     }
@@ -271,7 +268,11 @@ const FastBooking = ({navigation}) => {
 
           <ScrollView style={{marginBottom: 200}}>
             <FlatList
-               data={searchText !== '' && filteredHomestays.length > 0 ? filteredHomestays : homestays}
+              data={
+                searchText !== '' && filteredHomestays.length > 0
+                  ? filteredHomestays
+                  : homestays
+              }
               renderItem={({item}) => (
                 <TouchableOpacity
                   onPress={() => handleHomestayPress(item.homestay_id)}>

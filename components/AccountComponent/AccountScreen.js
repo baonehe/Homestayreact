@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../assets/consts/colors';
@@ -11,6 +11,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
+import {useFocusEffect} from '@react-navigation/native';
 
 function Account({navigation, route}) {
   const {email} = route.params;
@@ -38,28 +39,29 @@ function Account({navigation, route}) {
   const HistoryHandle = async () => {
     navigation.navigate('HistoryScreen');
   };
-  useEffect(() => {
-    checkInfo();
-  });
-  const checkInfo = async () => {
-    const mail = await AsyncStorage.getItem('EmailAccount');
-    firestore()
-      .collection('Users')
-      .where('email', '==', mail)
-      .get()
-      .then(querySnapshot => {
-        if (querySnapshot.docs.length > 0) {
-          if (querySnapshot.docs[0]._data.email === mail) {
-            setname(querySnapshot.docs[0]._data.name);
-            setphone(querySnapshot.docs[0]._data.phone);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchInfo = async () => {
+        const mail = await AsyncStorage.getItem('EmailAccount');
+        try {
+          const querySnapshot = await firestore()
+            .collection('Users')
+            .where('email', '==', mail)
+            .get();
+          if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            setname(userData.name);
+            setphone(userData.phone);
             setaccmail(mail);
           }
+        } catch (error) {
+          console.log('Error getting user information:', error);
         }
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
+      };
+
+      fetchInfo();
+    }, []),
+  );
   return (
     <SafeAreaView>
       <ScrollView style={{marginBottom: 80}}>

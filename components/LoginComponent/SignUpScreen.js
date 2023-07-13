@@ -7,13 +7,15 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import colors from '../../assets/consts/colors';
 
-function SignUp({navigation}) {
+const SignUp = ({navigation}) => {
   const [formData, setFormData] = useState({
     regemail: '',
     fullname: '',
     phonenumber: '',
     password: '',
     checkpassword: '',
+    showPassword: false,
+    showCheckPassword: false,
   });
 
   const handleInputChange = (name, value) => {
@@ -23,12 +25,41 @@ function SignUp({navigation}) {
   const handleSignUp = async () => {
     const {regemail, fullname, phonenumber, password, checkpassword} = formData;
 
+    // Email validation
+    if (!regemail.endsWith('@gmail.com')) {
+      Alert.alert('Invalid Email', 'Please enter a valid Gmail address.');
+      return;
+    }
+
+    // Phone number validation
+    if (phonenumber.length !== 10) {
+      Alert.alert(
+        'Invalid Phone Number',
+        'Please enter a 10-digit phone number.',
+      );
+      return;
+    }
+
+    // Password validation
+    if (password !== checkpassword) {
+      Alert.alert('Password Mismatch', 'The passwords do not match.');
+      return;
+    }
+
     try {
       const response = await auth().createUserWithEmailAndPassword(
         regemail,
         password,
       );
-      const {uid} = response.user;
+      const {uid, emailVerified} = response.user;
+
+      if (!emailVerified) {
+        await response.user.sendEmailVerification();
+        Alert.alert(
+          'Email Verification',
+          'A verification email has been sent to your email address. Please verify before logging in.',
+        );
+      }
 
       await firestore().collection('Users').doc(uid).set({
         name: fullname,
@@ -45,6 +76,20 @@ function SignUp({navigation}) {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setFormData(prevState => ({
+      ...prevState,
+      showPassword: !prevState.showPassword,
+    }));
+  };
+
+  const toggleCheckPasswordVisibility = () => {
+    setFormData(prevState => ({
+      ...prevState,
+      showCheckPassword: !prevState.showCheckPassword,
+    }));
+  };
+
   const backloginscreen = () => {
     navigation.navigate('Login');
   };
@@ -56,7 +101,7 @@ function SignUp({navigation}) {
         <Icon name="envelope" size={20} marginRight={10} />
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="Email (example@gmail.com)"
           value={formData.regemail}
           keyboardType="email-address"
           onChangeText={text => handleInputChange('regemail', text)}
@@ -76,7 +121,7 @@ function SignUp({navigation}) {
         <Icon name="phone" size={20} marginRight={10} />
         <TextInput
           style={styles.input}
-          placeholder="Your mobile phone"
+          placeholder="Your mobile phone (10 digits)"
           value={formData.phonenumber}
           keyboardType="number-pad"
           onChangeText={text => handleInputChange('phonenumber', text)}
@@ -88,8 +133,13 @@ function SignUp({navigation}) {
           style={styles.input}
           placeholder="New password"
           value={formData.password}
-          secureTextEntry
+          secureTextEntry={!formData.showPassword}
           onChangeText={text => handleInputChange('password', text)}
+        />
+        <Icon
+          name={formData.showPassword ? 'eye' : 'eye-slash'}
+          size={20}
+          onPress={togglePasswordVisibility}
         />
       </View>
       <View style={styles.samerow}>
@@ -98,33 +148,27 @@ function SignUp({navigation}) {
           style={styles.input}
           placeholder="Confirm your new password"
           value={formData.checkpassword}
-          secureTextEntry
+          secureTextEntry={!formData.showCheckPassword}
           onChangeText={text => handleInputChange('checkpassword', text)}
+        />
+        <Icon
+          name={formData.showCheckPassword ? 'eye' : 'eye-slash'}
+          size={20}
+          onPress={toggleCheckPasswordVisibility}
         />
       </View>
       <View style={styles.samerow}>
-        <Text style={{marginStart: 12, marginTop: 5}}>
+        <Text style={{marginStart: 0, marginTop: 5}}>
           {' '}
           By signing up, you're agree to our{' '}
         </Text>
         <Text style={colors.primary}> Terms & Conditions </Text>
         <Text> and </Text>
-        <Text style={{color: colors.primary, marginStart: 12}}>
-          {' '}
+        <Text style={{color: colors.primary, marginStart: 5}}>
           Privacy Policy{' '}
         </Text>
       </View>
-      <Button
-        mode="contained"
-        style={{
-          height: 45,
-          width: '80%',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: colors.dark,
-          marginTop: 20,
-        }}
-        onPress={handleSignUp}>
+      <Button mode="contained" style={styles.button} onPress={handleSignUp}>
         Sign up
       </Button>
       <View style={styles.samerow}>
@@ -136,7 +180,7 @@ function SignUp({navigation}) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   title: {
@@ -147,18 +191,26 @@ const styles = StyleSheet.create({
   },
   samerow: {
     flexWrap: 'wrap',
+    marginStart: 10,
     flexDirection: 'row',
     alignItems: 'center',
   },
   input: {
-    width: '80%',
+    flex: 1,
     height: 50,
     borderBottomColor: '#ccc',
     borderBottomWidth: 0.5,
     borderRadius: 10,
-    paddingTop: 25,
     paddingLeft: 10,
     marginBottom: 10,
+  },
+  button: {
+    height: 45,
+    width: '80%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.dark,
+    marginTop: 20,
   },
 });
 

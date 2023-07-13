@@ -141,85 +141,81 @@ const DetailHomestayScreen = ({ navigation, route }) => {
     }
   }, [dailyDuration, getData, hourlyDuration, navigation, rooms, timeType]);
 
+  const bookHomestay = async () => {
+    const booking_id = generateBookingId();
+    const newBooking = {
+      booking_id: booking_id,
+      homestay_id: homestay.homestay_id,
+      room_id: chooseRoom.room_id,
+      user_id: await AsyncStorage.getItem('userId'),
+      check_in: selector.checkIn,
+      check_out: selector.checkOut,
+      price: price,
+      status: 'booked',
+    };
+    setNotiModal(!notiModal);
+    database()
+      .ref('booking')
+      .push(newBooking)
+      .then(() => {
+        console.log('Booking added to the database');
+        fetchRooms();
+      })
+      .catch(error => {
+        console.log('Error adding booking to the database: ', error);
+        // Xử lý lỗi nếu có
+      });
+    firestore()
+      .collection('Booking')
+      .add(newBooking)
+      .then(() => {
+        console.log('Booking added to the database');
+        fetchRooms();
+      })
+      .catch(error => {
+        console.log('Error adding booking to the database: ', error);
+        // Xử lý lỗi nếu có
+      });
+    onDisplayNotification({
+      title: 'Stelio Booking',
+      body: `Your booking ${booking_id} is confirmed.`,
+    });
+  };
 
-  // const bookHomestay = async () => {
-  //   const booking_id = generateBookingId();
-  //   const newBooking = {
-  //     booking_id: booking_id,
-  //     homestay_id: homestay.homestay_id,
-  //     room_id: chooseRoom.room_id,
-  //     user_id: await AsyncStorage.getItem('userId'),
-  //     check_in: selector.checkIn,
-  //     check_out: selector.checkOut,
-  //     price: price,
-  //     status: 'booked',
-  //   };
-  //   setNotiModal(!notiModal);
-  //   database()
-  //     .ref('booking')
-  //     .push(newBooking)
-  //     .then(() => {
-  //       console.log('Booking added to the database');
-  //       fetchRooms();
-  //     })
-  //     .catch(error => {
-  //       console.log('Error adding booking to the database: ', error);
-  //       // Xử lý lỗi nếu có
-  //     });
-  //   firestore()
-  //     .collection('Booking')
-  //     .add(newBooking)
-  //     .then(() => {
-  //       console.log('Booking added to the database');
-  //       fetchRooms();
-  //     })
-  //     .catch(error => {
-  //       console.log('Error adding booking to the database: ', error);
-  //       // Xử lý lỗi nếu có
-  //     });
-  //   onDisplayNotification({
-  //     title: 'Stelio Booking',
-  //     body: `Your booking ${booking_id} is confirmed.`,
-  //   });
-  // };
-
-  const ShowExtension = ({ item }) => {
+  const ShowExtension = ({item, itemCount}) => {
     return (
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          marginStart: 40,
+          marginRight: 10,
         }}>
-        {item.key == 'Buffet' && item.value == '1' && (
-          <View>
-            <Ionicons name="restaurant" size={30} color="black" />
-            <Text>{item.key}</Text>
-          </View>
-        )}
-        {item.key == 'Car_park' && item.value == '1' && (
-          <View>
-            <MaterialCommunityIcons name="parking" size={30} color="black" />
-            <Text>{item.key}</Text>
-          </View>
-        )}
-        {item.key == 'MotorBike' && item.value == '1' && (
-          <View>
-            <MaterialCommunityIcons name="motorbike" size={30} color="black" />
-            <Text>{item.key}</Text>
-          </View>
-        )}
-        {item.key == 'Wifi' && item.value == '1' && (
-          <View>
-            <AntDesign name="wifi" size={30} color="black" />
-            <Text style={{ marginLeft: 4 }}>{item.key}</Text>
+        {item.value == '1' && (
+          <View style={styles.extensionItem}>
+            {item.key === 'Buffet' && (
+              <Ionicons name="restaurant" size={30} color="black" />
+            )}
+            {item.key === 'Car_park' && (
+              <MaterialCommunityIcons name="parking" size={30} color="black" />
+            )}
+            {item.key === 'MotorBike' && (
+              <MaterialCommunityIcons
+                name="motorbike"
+                size={30}
+                color="black"
+              />
+            )}
+            {item.key === 'Wifi' && (
+              <AntDesign name="wifi" size={30} color="black" />
+            )}
+            <Text style={styles.extensionText}>{item.key}</Text>
           </View>
         )}
       </View>
     );
   };
 
-  const RoomItem = ({ item }) => {
+  const RoomItem = ({item}) => {
     const hasRooms = rooms[item.roomtype_id];
     const isAvailable = hasRooms !== undefined && hasRooms.length > 0;
     if (isAvailable) {
@@ -515,55 +511,6 @@ const DetailHomestayScreen = ({ navigation, route }) => {
           </View>
         </ImageBackground>
         <View>
-          {/* <Modal
-            animationType="slide"
-            transparent={true}
-            visible={notiModal}
-            onRequestClose={() => {
-              Alert.alert('Modal has been closed.');
-              setNotiModal(!notiModal);
-            }}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                {check ? (
-                  <View>
-                    <Text style={[styles.textStyle, {color: colors.dark}]}>
-                      {text}
-                    </Text>
-                    <Text style={styles.textStyle}>
-                      {'\n'} Room {roomNumber} - Type: {type}
-                    </Text>
-                    <View style={styles.buttonContainer}>
-                      <TouchableOpacity
-                        style={styles.cancelBtn}
-                        onPress={() => setNotiModal(!notiModal)}>
-                        <Text style={styles.buttonText}>Cancel</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.confirmBtn}
-                        onPress={() => bookHomestay()}>
-                        <Text style={styles.buttonText}>OK</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                ) : (
-                  <View>
-                    <Text style={[styles.textStyle, {color: colors.red}]}>
-                      {text}
-                    </Text>
-                    <View style={styles.buttonContainer}>
-                      <TouchableOpacity
-                        style={styles.confirmBtn}
-                        onPress={() => setNotiModal(!notiModal)}>
-                        <Text style={styles.buttonText}>OK</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
-              </View>
-            </View>
-          </Modal> */}
-
           <View style={styles.iconContainer}>
             <FavoriteButton item={homestay} />
           </View>
@@ -606,8 +553,13 @@ const DetailHomestayScreen = ({ navigation, route }) => {
           <FlatList
             data={dataArray}
             horizontal
-            contentContainerStyle={styles.flatListVertical}
-            renderItem={({ item }) => <ShowExtension item={item} />}
+            contentContainerStyle={styles.flatListContainer}
+            renderItem={({item}) => (
+              <ShowExtension
+                item={item}
+                itemCount={dataArray.filter(i => i.value === '1').length}
+              />
+            )}
           />
           <View
             style={{
@@ -734,6 +686,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  flatListContainer: {
+    paddingVertical: 10,
+    flex: 1,
+    justifyContent: 'center',
   },
   headerImage: {
     height: 400,
@@ -948,7 +905,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#BCB6DC',
   },
-
+  extensionItem: {
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  extensionText: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: 'center',
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',

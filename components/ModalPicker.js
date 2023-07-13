@@ -5,8 +5,8 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
-  ScrollView,
 } from 'react-native';
+import {ScrollView} from 'react-native-virtualized-view';
 import colors from '../assets/consts/colors';
 
 const OPTIONS = ['Male', 'Female'];

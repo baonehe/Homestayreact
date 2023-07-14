@@ -1,129 +1,141 @@
 import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import database from '@react-native-firebase/database';
-import firestore from '@react-native-firebase/firestore';
 import CompletedBox from '../CompleteButton';
 import colors from '../../assets/consts/colors';
-
+import database from '@react-native-firebase/database';
+import firestore from '@react-native-firebase/firestore';
 const History = () => {
-  const [bookingData, setBookingData] = useState(null);
-  const [roomData, setRoomData] = useState([]);
-  const [userId, setUserId] = useState(null);
+  const [bookingData, setBookingData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchRoomsByIds = async ids => {
-    const roomPromises = ids.map(id =>
-      database()
-        .ref('/homestays')
-        .orderByChild('homestay_id')
-        .equalTo(id)
-        .once('value'),
-    );
-
-    try {
-      const roomSnapshots = await Promise.all(roomPromises);
-      const rooms = [];
-      roomSnapshots.forEach(snapshot => {
-        if (snapshot.exists()) {
-          snapshot.forEach(childSnapshot => {
-            const room = childSnapshot.val();
-            const booking = bookingData.find(
-              booking => booking.homestay_id === room.homestay_id,
-            );
-            if (booking) {
-              room.room_number = booking.room_number;
-              room.total_price = booking.total_price;
-            }
-            rooms.push(room);
-          });
-        } else {
-          console.log('No room found for room_id:', id);
-        }
-      });
-      return rooms;
-    } catch (error) {
-      console.log('Error fetching rooms:', error);
-      return [];
-    }
-  };
-  const fetchBookingDataByUserId = async id => {
+  const fetchBookingDataByUserId = async userId => {
     try {
       const querySnapshot = await firestore()
         .collection('Booking')
-        .where('user_id', '==', id)
+        .where('user_id', '==', userId)
         .get();
+
       if (!querySnapshot.empty) {
-        const bookings = querySnapshot.docs.map(doc => doc.data());
-        setBookingData(bookings);
-        const roomIds = bookings.map(booking => booking.homestay_id);
-        const rooms = await fetchRoomsByIds(roomIds);
-        setRoomData(rooms);
-        console.log(roomData);
+        const bookings = querySnapshot.docs.map(async doc => {
+          const booking = doc.data();
+          console.log(booking);
+          const homestayInfo = await fetchHomestayInfo(booking.homestay_id);
+          return {
+            ...booking,
+            name: homestayInfo.name,
+            image: homestayInfo.image, // Add fallback image URL here
+          };
+        });
+
+        return Promise.all(bookings);
       } else {
-        setBookingData(null);
+        return [];
       }
     } catch (error) {
-      console.log('Error getting booking document:', error);
-      setBookingData(null);
-    } finally {
+      console.log('Error getting booking documents:', error);
+      return [];
+    }
+  };
+
+  const fetchHomestayInfo = async homestayId => {
+    try {
+      const snapshot = await database()
+        .ref('/homestays')
+        .orderByChild('homestay_id')
+        .equalTo(homestayId)
+        .once('value');
+
+      if (snapshot.exists()) {
+        const homestay = Object.values(snapshot.val())[0];
+        console.log('ZALO', homestay);
+        if (homestay && homestay.name && homestay.image) {
+          return {
+            name: homestay.name,
+            image: homestay.image,
+          };
+        } else {
+          console.log('Invalid homestay data:', homestay);
+          return {
+            name: '',
+            image: '',
+          };
+        }
+      } else {
+        console.log('No homestay found for homestay_id:', homestayId);
+        return {
+          name: '',
+          image: '',
+        };
+      }
+    } catch (error) {
+      console.log('Error fetching homestay info:', error);
+      return {
+        name: '',
+        image: '',
+      };
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      const bookings = await fetchBookingDataByUserId(userId);
+
+      const bookingsWithInfo = await Promise.all(
+        bookings.map(async booking => {
+          const homestayInfo = await fetchHomestayInfo(booking.homestay_id);
+
+          return {
+            ...booking,
+            name: homestayInfo.name,
+            image: homestayInfo.image, // Add fallback image URL here
+          };
+        }),
+      );
+      setBookingData(bookingsWithInfo);
+      setIsLoading(false);
+    } catch (error) {
+      console.log('Error fetching user data:', error);
       setIsLoading(false);
     }
   };
-  const fetchUserId = async () => {
-    try {
-      const id = await AsyncStorage.getItem('userId');
-      setUserId(id);
-      await fetchBookingDataByUserId(id);
-    } catch (error) {
-      console.log('Error fetching user ID:', error);
-    }
-  };
+
   useEffect(() => {
-    fetchUserId();
-    console.log(bookingData);
-  }, [userId]);
+    fetchUserData();
+  }, []);
 
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
-  if (!bookingData || !roomData) {
+  if (bookingData.length === 0) {
     return <Text style={styles.noItemsText}>No booking data available</Text>;
   }
 
   return (
     <View style={styles.container}>
-      {bookingData && roomData ? (
-        <FlatList
-          data={roomData}
-          keyExtractor={item => item.homestay_id.toString()}
-          renderItem={({item}) => {
-            const booking = bookingData.find(
-              booking => booking.homestay_id === item.homestay_id,
-            );
-            return (
-              <View style={styles.card}>
-                <Image
-                  style={styles.salesOffCardImage}
-                  source={{uri: item.image}}
-                />
-                <View style={styles.cardContent}>
-                  <Text style={styles.cardTitle} numberOfLines={3}>
-                    {item.name + ' - ' + 'No.' + item.room_number}
-                  </Text>
-                  <Text style={styles.cardPrice}>{item.total_price} $</Text>
-                  <View style={{marginLeft: 150}}>
-                    <CompletedBox />
-                  </View>
-                </View>
+      <FlatList
+        data={bookingData}
+        keyExtractor={item => item.booking_id.toString()}
+        renderItem={({item}) => (
+          <View style={styles.card}>
+            <Image
+              style={styles.salesOffCardImage}
+              source={{uri: item.image}}
+            />
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle} numberOfLines={3}>
+                {item.name + ' - ' + 'No.' + item.room_number}
+              </Text>
+              <Text style={styles.cardPrice}>{item.total_price} $</Text>
+              <View style={{marginLeft: 150}}>
+                <CompletedBox />
               </View>
-            );
-          }}
-        />
-      ) : (
-        <Text style={styles.noItemsText}>No booking data available</Text>
-      )}
+            </View>
+          </View>
+        )}
+      />
     </View>
   );
 };
@@ -131,6 +143,10 @@ const History = () => {
 export default History;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
   card: {
     flexDirection: 'row',
     marginBottom: 10,

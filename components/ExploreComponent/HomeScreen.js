@@ -11,7 +11,8 @@ import {
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SliderBox} from 'react-native-image-slider-box';
-import {ScrollView, TextInput, FlatList} from 'react-native-gesture-handler';
+import {TextInput, FlatList} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-virtualized-view';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
 import Geolocation from '@react-native-community/geolocation';

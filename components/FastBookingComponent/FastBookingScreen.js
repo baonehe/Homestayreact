@@ -13,7 +13,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import database from '@react-native-firebase/database';
 import colors from '../../assets/consts/colors';
 import images from '../../assets/images';
-import {ScrollView} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-virtualized-view';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

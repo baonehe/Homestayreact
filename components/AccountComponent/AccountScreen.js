@@ -93,13 +93,11 @@ function Account({navigation, route}) {
           <View>
             <Text style={styles.Title}>My Journey</Text>
             <View style={styles.Card}>
-              <Icon
-                name="history"
-                size={24}
-                marginHorizontal={10}
-                onPress={HistoryHandle}
-              />
-              <Text style={styles.FontCard}> History Booking</Text>
+              <Icon name="history" size={24} marginHorizontal={10} />
+              <Text style={styles.FontCard} onPress={HistoryHandle}>
+                {' '}
+                History Booking
+              </Text>
             </View>
             <View style={styles.Card}>
               <IconAnt name="rocket1" size={24} marginHorizontal={10} />
